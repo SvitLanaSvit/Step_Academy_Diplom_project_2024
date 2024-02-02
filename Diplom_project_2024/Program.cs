@@ -6,8 +6,8 @@ using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+//var keyVaultEndpoint = new Uri("https://diplomsecrets.vault.azure.net/");
+//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
 
 // Add services to the container.
 
@@ -19,12 +19,6 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("HousesDb"));
     //options.UseSqlServer(builder.Configuration["HousesDB"]);
 });
-
-//builder.Services.AddAzureClients(clientBuilder =>
-//{
-//    clientBuilder.AddBlobServiceClient(builder.Configuration["HouseContainerBlob"], preferMsi: true);
-//    clientBuilder.AddQueueServiceClient(builder.Configuration["HouseContainerQueue"], preferMsi: true);
-//});
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{
