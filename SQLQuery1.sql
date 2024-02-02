@@ -6,6 +6,8 @@ Select * from Categories;
 Select * from Houses;
 Select * from AspNetUsers;
 Select * from Addresses;
+Select * from Rents;
+Select * from Tags;
 
 INSERT INTO Addresses (Latitude, Longitude, Country, City, FormattedAddress, AddressLabel) VALUES
 ('40.712776', '-74.005974', 'USA', 'New York', 'New York, NY, USA', 'NYC Label'),
