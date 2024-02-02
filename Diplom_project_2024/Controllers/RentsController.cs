@@ -15,6 +15,8 @@ namespace Diplom_project_2024.Controllers
             _context = context;
         }
 
+        //GET: api/Rents
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Rent>>> GetRents()
         {
             return await _context.Rents.ToListAsync();
