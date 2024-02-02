@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Diplom_project_2024.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Diplom_project_2024.Controllers
 {
@@ -6,9 +8,16 @@ namespace Diplom_project_2024.Controllers
     [ApiController]
     public class RentsController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly HousesDBContext _context;
+
+        public RentsController(HousesDBContext context)
         {
-            return NoContent();
+            _context = context;
+        }
+
+        public async Task<ActionResult<IEnumerable<Rent>>> GetRents()
+        {
+            return await _context.Rents.ToListAsync();
         }
     }
 }
