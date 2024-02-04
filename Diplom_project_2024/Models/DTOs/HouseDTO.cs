@@ -9,7 +9,7 @@
         public int Rooms { get; set; }
         public AddressDTO? Address { get; set; }
         public CategoryDTO? Category { get; set; }
-        public string? Username { get; set; }
+        public UserDTO? User { get; set; }
         public bool IsModerated { get; set; }
     }
 }
