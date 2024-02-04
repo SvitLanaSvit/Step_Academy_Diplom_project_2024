@@ -48,7 +48,7 @@ namespace Diplom_project_2024.Controllers //TODO
             _context.Houses.Remove(house);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok($"House with ID {id} has been successfully deleted.");
         }
     }
 }

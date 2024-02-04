@@ -96,7 +96,7 @@ namespace Diplom_project_2024.Controllers
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok($"Category with ID {id} has been successfully deleted.");
         }
     }
 }
