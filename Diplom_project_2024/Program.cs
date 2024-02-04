@@ -20,11 +20,16 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
     //options.UseSqlServer(builder.Configuration["HousesDB"]);
 });
 
-//builder.Services.AddAzureClients(clientBuilder =>
-//{
-//    clientBuilder.AddBlobServiceClient(builder.Configuration["HouseContainerBlob"], preferMsi: true);
-//    clientBuilder.AddQueueServiceClient(builder.Configuration["HouseContainerQueue"], preferMsi: true);
-//});
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    //clientBuilder.AddBlobServiceClient(builder.Configuration["HouseContainerBlob"], preferMsi: true);
+    //clientBuilder.AddQueueServiceClient(builder.Configuration["HouseContainerQueue"], preferMsi: true); 
+
+    clientBuilder
+    .AddBlobServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
+    clientBuilder
+    .AddQueueServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
+});
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{
@@ -40,11 +45,6 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAzureClients(clientBuilder =>
-{
-    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string:blob"], preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string:queue"], preferMsi: true);
-});
 
 var app = builder.Build();
 

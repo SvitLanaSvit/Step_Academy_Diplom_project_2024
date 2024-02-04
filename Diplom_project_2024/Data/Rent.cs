@@ -3,7 +3,7 @@
     public class Rent
     {
         public int Id { get; set; }
-        public string? Username { get; set; } = default!;
+        public string? UserId { get; set; } = default!;
         public int HouseId { get; set; }
         public int CountOfDay { get; set; }
         public double? Price { get; set; }

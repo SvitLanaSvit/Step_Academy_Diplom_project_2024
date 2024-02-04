@@ -3,7 +3,6 @@
     public class RentDTO
     {
         public int Id { get; set; }
-        public string? Username { get; set; }
         public int CountOfDay { get; set; }
         public double? Price { get; set; }
         public string? From { get; set; }

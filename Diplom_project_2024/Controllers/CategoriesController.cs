@@ -79,7 +79,7 @@ namespace Diplom_project_2024.Controllers
             await _context.Entry(categoryFromDB).ReloadAsync();
 
             // Return the updated category
-            return categoryFromDB;
+            return Ok(categoryFromDB);
 
         }
 

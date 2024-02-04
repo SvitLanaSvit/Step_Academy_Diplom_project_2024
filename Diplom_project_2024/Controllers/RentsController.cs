@@ -29,7 +29,6 @@ namespace Diplom_project_2024.Controllers
             .Select(r => new RentDTO
             {
                 Id = r.Id,
-                Username = r.Username,
                 CountOfDay = r.CountOfDay,
                 Price = r.Price,
                 From = r.From,
@@ -50,7 +49,6 @@ namespace Diplom_project_2024.Controllers
                     Price = r.House.Price,
                     SquareMeter = r.House.SquareMeter,
                     Rooms = r.House.Rooms,
-                    Username = r.House.Username,
                     IsModerated = r.House.IsModerated,
                     Address = new AddressDTO
                     {
@@ -66,6 +64,15 @@ namespace Diplom_project_2024.Controllers
                     {
                         Id = r.House.CategoryId,
                         Name = r.House!.Category!.Name
+                    },
+                    User = new UserDTO
+                    {
+                        Id = r.House.User!.Id,
+                        DisplayName = r.House.User.DisplayName,
+                        Email = r.House.User.Email,
+                        ImagePath = r.House.User.ImagePath,
+                        UserName = r.House.User.UserName,
+                        PhoneNumber = r.House.User.PhoneNumber
                     }
                 }
             })
@@ -88,7 +95,6 @@ namespace Diplom_project_2024.Controllers
             .Select(r => new RentDTO
             {
                 Id = r.Id,
-                Username = r.Username,
                 CountOfDay = r.CountOfDay,
                 Price = r.Price,
                 From = r.From,
@@ -109,7 +115,6 @@ namespace Diplom_project_2024.Controllers
                     Price = r.House.Price,
                     SquareMeter = r.House.SquareMeter,
                     Rooms = r.House.Rooms,
-                    Username = r.House.Username,
                     IsModerated = r.House.IsModerated,
                     Address = new AddressDTO
                     {
@@ -125,6 +130,15 @@ namespace Diplom_project_2024.Controllers
                     {
                         Id = r.House.CategoryId,
                         Name = r.House!.Category!.Name
+                    },
+                    User = new UserDTO
+                    {
+                        Id = r.House.User!.Id,
+                        DisplayName = r.House.User.DisplayName,
+                        Email = r.House.User.Email,
+                        ImagePath = r.House.User.ImagePath,
+                        UserName = r.House.User.UserName,
+                        PhoneNumber = r.House.User.PhoneNumber
                     }
                 }
             })
@@ -153,9 +167,12 @@ namespace Diplom_project_2024.Controllers
             // Create a new Rent from the DTO
             var user = await _context.Users.FindAsync(rentCreationDTO.UserId);
             //var house = await _context.Houses.FindAsync(rentCreationDTO.HouseId);
+            if(user == null)
+            {
+                return NotFound($"No user found with ID {rentCreationDTO.UserId}.");
+            }
             var rent = new Rent
             {
-                Username = rentCreationDTO.UserName,
                 HouseId = rentCreationDTO.HouseId,
                 CountOfDay = rentCreationDTO.CountOfDay,
                 Price = rentCreationDTO.Price,
@@ -204,7 +221,6 @@ namespace Diplom_project_2024.Controllers
                 var rentDto = new RentDTO
                 {
                     Id = rent.Id,
-                    Username = rent.Username,
                     CountOfDay = rent.CountOfDay,
                     Price = rent.Price,
                     From = rent.From,
@@ -225,7 +241,6 @@ namespace Diplom_project_2024.Controllers
                         Price = rent.House.Price,
                         SquareMeter = rent.House.SquareMeter,
                         Rooms = rent.House.Rooms,
-                        Username = rent.House.Username,
                         IsModerated = rent.House.IsModerated,
                         Address = new AddressDTO
                         {
@@ -241,6 +256,15 @@ namespace Diplom_project_2024.Controllers
                         {
                             Id = rent.House.CategoryId,
                             Name = rent.House!.Category!.Name
+                        },
+                        User = new UserDTO
+                        {
+                            Id = rent.House.User!.Id,
+                            DisplayName = rent.House.User.DisplayName,
+                            Email = rent.House.User.Email,
+                            ImagePath = rent.House.User.ImagePath,
+                            UserName = rent.House.User.UserName,
+                            PhoneNumber = rent.House.User.PhoneNumber
                         }
 
                     }

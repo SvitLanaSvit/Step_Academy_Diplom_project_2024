@@ -8,12 +8,20 @@ Select * from AspNetUsers;
 Select * from Addresses;
 Select * from Rents;
 Select * from Tags;
+Select * from HouseTag;
 
 INSERT INTO Addresses (Latitude, Longitude, Country, City, FormattedAddress, AddressLabel) VALUES
 ('40.712776', '-74.005974', 'USA', 'New York', 'New York, NY, USA', 'NYC Label'),
 ('48.856614', '2.352222', 'France', 'Paris', 'Paris, France', 'Paris Label'),
 ('51.507351', '-0.127758', 'UK', 'London', 'London, UK', 'London Label'),
 ('35.689487', '139.691711', 'Japan', 'Tokyo', 'Tokyo, Japan', 'Tokyo Label');
+
+INSERT INTO Addresses (Latitude, Longitude, Country, City, FormattedAddress, AddressLabel)
+VALUES ('34.052235', '-118.243683', 'USA', 'Los Angeles', 'Los Angeles, CA, USA', 'Downtown LA');
+
+INSERT INTO Addresses (Latitude, Longitude, Country, City, FormattedAddress, AddressLabel)
+VALUES
+('35.689487', '139.691706', 'Japan', 'Tokyo', 'Tokyo, Japan', 'Tokyo Tower');
 
 INSERT INTO AspNetUsers(Id, Email, EmailConfirmed, DisplayName, UserName, AccessFailedCount, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled)
 Values('1','dmytro.vychkin@gmail.com', 1, 'dmytro', 'dmytro', 1, 1, 0, 0),
@@ -39,3 +47,14 @@ VALUES
 UPDATE Rents
 SET Price = 900
 Where Id = 2;
+
+Update Houses
+Set UserId = 1
+Where Id = 14;
+
+INSERT INTO Tags (Name, ImagePath) VALUES
+('Nature', '/images/tags/nature.png'),
+('City Life', '/images/tags/citylife.png'),
+('Mountains', '/images/tags/mountains.png'),
+('Beaches', '/images/tags/beaches.png'),
+('Historical', '/images/tags/historical.png');
