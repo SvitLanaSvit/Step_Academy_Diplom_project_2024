@@ -10,6 +10,10 @@
     "storage1": {
       "type": "storage",
       "connectionId": "blob-string"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:HousesDB"
     }
   }
 }
