@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Azure.Identity;
 using Microsoft.Extensions.Azure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<HousesDBContext>();
-
+builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<HousesDBContext>();
 builder.Services.AddDbContext<HousesDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("HousesDb"));
@@ -45,6 +48,24 @@ builder.Services.AddAzureClients(clientBuilder =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthorization(); //authorization
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 var app = builder.Build();
 
