@@ -1,4 +1,6 @@
-﻿namespace Diplom_project_2024.Models.DTOs
+﻿using Diplom_project_2024.Data;
+
+namespace Diplom_project_2024.Models.DTOs
 {
     public class HouseDTO
     {
@@ -11,5 +13,7 @@
         public CategoryDTO? Category { get; set; }
         public UserDTO? User { get; set; }
         public bool IsModerated { get; set; }
+        public List<TagDTO>? Tags { get; set; }
+        public List<ImageDTO>? Images { get; set; }
     }
 }
