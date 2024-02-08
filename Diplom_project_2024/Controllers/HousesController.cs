@@ -4,6 +4,7 @@ using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace Diplom_project_2024.Controllers //TODO PUT
 {
@@ -32,6 +33,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 .Include(h => h.Address)
                 .Include(h => h.Category)
                 .Include(h => h.User)
+                .Include(h => h.Tags)
+                .Include(h => h.Images)
                 .Select(h => new HouseDTO
                 {
                     Id = h.Id,
@@ -63,7 +66,19 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         UserName = h.User.UserName,
                         PhoneNumber = h.User.PhoneNumber
                     },
-                    IsModerated = h.IsModerated
+                    IsModerated = h.IsModerated,
+                    Tags = h.Tags!.Select(t => new TagDTO 
+                    { 
+                        Id = t.Id,
+                        Name = t.Name,
+                        ImagePath = t.ImagePath
+                    }).ToList(),
+                    Images = h.Images!.Select(img => new ImageDTO
+                    {
+                        Id = img.Id,
+                        Path = img.Path,
+                        IsMain = img.IsMain
+                    }).ToList()
                 })
                 .ToListAsync();
 
@@ -110,7 +125,19 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         UserName = h.User.UserName,
                         PhoneNumber = h.User.PhoneNumber
                     },
-                    IsModerated = h.IsModerated
+                    IsModerated = h.IsModerated,
+                    Tags = h.Tags!.Select(t => new TagDTO
+                    {
+                        Id = t.Id,
+                        Name = t.Name,
+                        ImagePath = t.ImagePath
+                    }).ToList(),
+                    Images = h.Images!.Select(img => new ImageDTO
+                    {
+                        Id = img.Id,
+                        Path = img.Path,
+                        IsMain = img.IsMain
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -124,56 +151,86 @@ namespace Diplom_project_2024.Controllers //TODO PUT
 
         //Post: api/Houses
         [HttpPost]
-        public async Task<IActionResult> PostHouse([FromBody] HouseCreateDTO houseCreateDTO)
+        public async Task<IActionResult> PostHouse([FromForm] HouseCreateDTO houseCreateDTO)
         {
-            //var addressExists = await _context.Addresses.AnyAsync(a => a.Id == houseCreateDTO.AddressId);
-            //var categoryExists = await _context.Categories.AnyAsync(c => c.Id == houseCreateDTO.CategoryId);
-            //var userExists = await _context.Users.AnyAsync(u => u.Id == houseCreateDTO.UserId);
-            //var tagsExists = await _context.Tags.AnyAsync(); //TODO
+            var categoryExists = await _context.Categories.AnyAsync(c => c.Id == houseCreateDTO.CategoryId);
+            var userExists = await _context.Users.AnyAsync(u => u.Id == houseCreateDTO.UserId);
 
-            //if(!addressExists || !categoryExists || !userExists) 
-            //{
-            //    return BadRequest("Invalid AddressId or CategoryId or UserId.");
-            //}
+            List<Image> images = new List<Image>(); ;
+            List<Tag> tags = new List<Tag>();
 
-            //var address = await _context.Addresses.FindAsync(houseCreateDTO.AddressId);
-            //var category = await _context.Categories.FindAsync(houseCreateDTO.CategoryId);
-            //var user = await _context.Users.FindAsync(houseCreateDTO.UserId);
-            //var tags = _context.Tags.Where(t => houseCreateDTO.TagIds!.Contains(t.Id)).ToList();
+            if (!categoryExists || !userExists)
+            {
+                return BadRequest("Invalid CategoryId or UserId.");
+            }
 
-            //if(address == null)
-            //{
-            //    return NotFound($"No address found with ID {houseCreateDTO.AddressId}.");
-            //}
+            var newAddress = new Address
+            {
+                // Assuming your Address object has these properties. Adjust accordingly.
+                Latitude = houseCreateDTO.Address!.Latitude,
+                Longitude = houseCreateDTO.Address.Longitude,
+                Country = houseCreateDTO.Address.Country,
+                City = houseCreateDTO.Address.City,
+                FormattedAddress = houseCreateDTO.Address.FormattedAddress,
+                AddressLabel = houseCreateDTO.Address.AddressLabel
+            };
+            _context.Addresses.Add(newAddress);
+            await _context.SaveChangesAsync();
 
-            //if(category == null)
-            //{
-            //    return NotFound($"No category found with ID {houseCreateDTO.CategoryId}.");
-            //}
+            // Create the house entity
+            var newHouse = new House
+            {
+                Description = houseCreateDTO.Description!,
+                Price = houseCreateDTO.Price,
+                SquareMeter = houseCreateDTO.SquareMeter,
+                Rooms = houseCreateDTO.Rooms,
+                AddressId = newAddress.Id,
+                CategoryId = houseCreateDTO.CategoryId,
+                UserId = houseCreateDTO.UserId!,
+                Tags = tags
+            };
 
-            //if(user == null)
-            //{
-            //    NotFound($"No user found with ID {houseCreateDTO.UserId}.");
-            //}
+            _context.Houses.Add(newHouse);
+            await _context.SaveChangesAsync();
 
-            //var house = new House
-            //{
-            //    Description = houseCreateDTO.Description,
-            //    Price = houseCreateDTO.Price,
-            //    SquareMeter = houseCreateDTO.SquareMeter,
-            //    Rooms = houseCreateDTO.Rooms,
-            //    IsModerated = houseCreateDTO.IsModerated,
-            //    Address = address,
-            //    Category = category,
-            //    User = user,
-            //    Tags = tags
-            //};
+            // Handle image uploads if any
+            if (houseCreateDTO.Images != null)
+            {
+                foreach (var image in houseCreateDTO.Images)
+                {
+                    bool isMain = houseCreateDTO.Images.IndexOf(image) == houseCreateDTO.MainImage;
 
-            //_context.Houses.Add(house);
-            //await _context.SaveChangesAsync();
+                    string filename = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                    BlobClient client = container.GetBlobClient(filename);
+                    await client.UploadAsync(image.OpenReadStream());
 
-            //return Ok(new { house.Id });
-            return NoContent();
+                    // Create a new Image entity and link it to the house
+                    var houseImage = new Image
+                    {
+                        House = newHouse,
+                        HouseId = newHouse.Id,
+                        IsMain = isMain,
+                        Path = client.Uri.AbsoluteUri
+                    };
+
+                    images.Add(houseImage);
+                }
+                await _context.AddRangeAsync(images);
+                await _context.SaveChangesAsync();
+            }
+
+            if (houseCreateDTO.TagIds != null)
+            {
+                foreach (var item in houseCreateDTO.TagIds)
+                {
+                    Tag tag = await _context.Tags.FirstAsync(t => t.Id == item);
+                    tags.Add(tag);
+                }
+
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(new { newHouse.Id });
         }
 
         //PUT: api/Houses/5

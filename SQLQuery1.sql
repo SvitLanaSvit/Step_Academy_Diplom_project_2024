@@ -9,6 +9,7 @@ Select * from Addresses;
 Select * from Rents;
 Select * from Tags;
 Select * from HouseTag;
+Select * from Images;
 
 INSERT INTO Addresses (Latitude, Longitude, Country, City, FormattedAddress, AddressLabel) VALUES
 ('40.712776', '-74.005974', 'USA', 'New York', 'New York, NY, USA', 'NYC Label'),

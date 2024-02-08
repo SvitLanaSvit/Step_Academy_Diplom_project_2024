@@ -26,9 +26,9 @@ builder.Services.AddAzureClients(clientBuilder =>
     //clientBuilder.AddQueueServiceClient(builder.Configuration["HouseContainerQueue"], preferMsi: true); 
 
     clientBuilder
-    .AddBlobServiceClient("XXX", preferMsi: true);
+    .AddBlobServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
     clientBuilder
-    .AddQueueServiceClient("XXX", preferMsi: true);
+    .AddQueueServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
 });
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
