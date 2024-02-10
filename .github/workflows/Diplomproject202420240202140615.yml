@@ -2,7 +2,7 @@ name: Создавайте и развертывайте приложения .N
 on:
   push:
     branches:
-    - dev_vychkin_devops
+    - dev
 env:
   AZURE_WEBAPP_NAME: Diplomproject202420240202140615
   AZURE_WEBAPP_PACKAGE_PATH: Diplom_project_2024\publish
