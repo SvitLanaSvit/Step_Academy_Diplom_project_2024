@@ -9,8 +9,7 @@ namespace Diplom_project_2024.Models.DTOs
         public int SquareMeter { get; set; }
         public int Rooms { get; set; }
         public Address? Address { get; set; }
-        public int CategoryId { get; set; }
-        public string? UserName { get; set; }  
+        public int CategoryId { get; set; } 
         public string? UserId { get; set; }
 
         public List<int>? TagIds { get; set; }
