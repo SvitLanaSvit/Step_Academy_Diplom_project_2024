@@ -156,149 +156,161 @@ namespace Diplom_project_2024.Controllers
         [HttpPost]
         public async Task<IActionResult> PostRent([FromBody] RentCreationDTO rentCreationDTO)
         {
-            var houseExists = await _context.Houses.AnyAsync(h => h.Id == rentCreationDTO.HouseId);
-            var userExists = await _context.Users.AnyAsync(u => u.Id == rentCreationDTO.UserId);
-
-            if (!houseExists || !userExists)
+            if (ModelState.IsValid)
             {
-                return BadRequest("Invalid HouseId or UserId.");
+                var houseExists = await _context.Houses.AnyAsync(h => h.Id == rentCreationDTO.HouseId);
+                var userExists = await _context.Users.AnyAsync(u => u.Id == rentCreationDTO.UserId);
+
+                if (!houseExists || !userExists)
+                {
+                    return BadRequest("Invalid HouseId or UserId.");
+                }
+
+                // Create a new Rent from the DTO
+                var user = await _context.Users.FindAsync(rentCreationDTO.UserId);
+                //var house = await _context.Houses.FindAsync(rentCreationDTO.HouseId);
+                if (user == null)
+                {
+                    return NotFound($"No user found with ID {rentCreationDTO.UserId}.");
+                }
+                var rent = new Rent
+                {
+                    HouseId = rentCreationDTO.HouseId,
+                    CountOfDay = rentCreationDTO.CountOfDay,
+                    Price = rentCreationDTO.Price,
+                    From = rentCreationDTO.From,
+                    To = rentCreationDTO.To,
+                    User = user
+                };
+
+                _context.Rents.Add(rent);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { rent.Id });
             }
-
-            // Create a new Rent from the DTO
-            var user = await _context.Users.FindAsync(rentCreationDTO.UserId);
-            //var house = await _context.Houses.FindAsync(rentCreationDTO.HouseId);
-            if(user == null)
-            {
-                return NotFound($"No user found with ID {rentCreationDTO.UserId}.");
-            }
-            var rent = new Rent
-            {
-                HouseId = rentCreationDTO.HouseId,
-                CountOfDay = rentCreationDTO.CountOfDay,
-                Price = rentCreationDTO.Price,
-                From = rentCreationDTO.From,
-                To = rentCreationDTO.To,
-                User = user
-            };
-
-            _context.Rents.Add(rent);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { rent.Id });
+            return BadRequest(ModelState);
         }
 
         //PUT: api/Rents/5
         [HttpPut("{id}")]
         public async Task<ActionResult<RentDTO>> PutRent(int id, [FromBody] RentUpdateDTO rentUpdateDTO)
         {
-            if(id != rentUpdateDTO.Id)
+            if (ModelState.IsValid)
             {
-                return BadRequest("The ID in the URL does not match the ID in the provided data.");
-            }
-
-            var rent = await _context.Rents
-            .Include(r => r.House)
-                .ThenInclude(h => h!.Address)
-            .Include(r => r.House)
-                .ThenInclude(h => h!.Category)
-            .Include(r => r.User)
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (rent == null)
-            {
-                return NotFound($"No rent found with ID {id}.");
-            }
-
-            rent!.CountOfDay = rentUpdateDTO.CountOfDay;
-            rent.Price = rentUpdateDTO.Price;
-            rent.From = rentUpdateDTO.From;
-            rent.To = rentUpdateDTO.To;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-
-                var rentDto = new RentDTO
+                if (id != rentUpdateDTO.Id)
                 {
-                    Id = rent.Id,
-                    CountOfDay = rent.CountOfDay,
-                    Price = rent.Price,
-                    From = rent.From,
-                    To = rent.To,
-                    User = new UserDTO
+                    return BadRequest("The ID in the URL does not match the ID in the provided data.");
+                }
+
+                var rent = await _context.Rents
+                .Include(r => r.House)
+                    .ThenInclude(h => h!.Address)
+                .Include(r => r.House)
+                    .ThenInclude(h => h!.Category)
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (rent == null)
+                {
+                    return NotFound($"No rent found with ID {id}.");
+                }
+
+                rent!.CountOfDay = rentUpdateDTO.CountOfDay;
+                rent.Price = rentUpdateDTO.Price;
+                rent.From = rentUpdateDTO.From;
+                rent.To = rentUpdateDTO.To;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+
+                    var rentDto = new RentDTO
                     {
-                        Id = rent.User!.Id,
-                        DisplayName = rent.User.DisplayName,
-                        Email = rent.User.Email,
-                        ImagePath = rent.User.ImagePath,
-                        UserName = rent.User.UserName,
-                        PhoneNumber = rent.User.PhoneNumber
-                    },
-                    House = new HouseDTO
-                    {
-                        Id = rent.House!.Id,
-                        Description = rent.House.Description,
-                        Price = rent.House.Price,
-                        SquareMeter = rent.House.SquareMeter,
-                        Rooms = rent.House.Rooms,
-                        IsModerated = rent.House.IsModerated,
-                        Address = new AddressDTO
-                        {
-                            Id = rent.House.Address!.Id,
-                            Latitude = rent.House!.Address.Latitude,
-                            Longitude = rent.House.Address.Longitude,
-                            Country = rent.House.Address.Country,
-                            City = rent.House.Address.City,
-                            FormattedAddress = rent.House.Address.FormattedAddress,
-                            AddressLabel = rent.House.Address.AddressLabel
-                        },
-                        Category = new CategoryDTO
-                        {
-                            Id = rent.House.CategoryId,
-                            Name = rent.House!.Category!.Name
-                        },
+                        Id = rent.Id,
+                        CountOfDay = rent.CountOfDay,
+                        Price = rent.Price,
+                        From = rent.From,
+                        To = rent.To,
                         User = new UserDTO
                         {
-                            Id = rent.House.User!.Id,
-                            DisplayName = rent.House.User.DisplayName,
-                            Email = rent.House.User.Email,
-                            ImagePath = rent.House.User.ImagePath,
-                            UserName = rent.House.User.UserName,
-                            PhoneNumber = rent.House.User.PhoneNumber
+                            Id = rent.User!.Id,
+                            DisplayName = rent.User.DisplayName,
+                            Email = rent.User.Email,
+                            ImagePath = rent.User.ImagePath,
+                            UserName = rent.User.UserName,
+                            PhoneNumber = rent.User.PhoneNumber
+                        },
+                        House = new HouseDTO
+                        {
+                            Id = rent.House!.Id,
+                            Description = rent.House.Description,
+                            Price = rent.House.Price,
+                            SquareMeter = rent.House.SquareMeter,
+                            Rooms = rent.House.Rooms,
+                            IsModerated = rent.House.IsModerated,
+                            Address = new AddressDTO
+                            {
+                                Id = rent.House.Address!.Id,
+                                Latitude = rent.House!.Address.Latitude,
+                                Longitude = rent.House.Address.Longitude,
+                                Country = rent.House.Address.Country,
+                                City = rent.House.Address.City,
+                                FormattedAddress = rent.House.Address.FormattedAddress,
+                                AddressLabel = rent.House.Address.AddressLabel
+                            },
+                            Category = new CategoryDTO
+                            {
+                                Id = rent.House.CategoryId,
+                                Name = rent.House!.Category!.Name
+                            },
+                            User = new UserDTO
+                            {
+                                Id = rent.House.User!.Id,
+                                DisplayName = rent.House.User.DisplayName,
+                                Email = rent.House.User.Email,
+                                ImagePath = rent.House.User.ImagePath,
+                                UserName = rent.House.User.UserName,
+                                PhoneNumber = rent.House.User.PhoneNumber
+                            }
+
                         }
+                    };
 
+                    return Ok(rentDto);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Rents.Any(e => e.Id == id))
+                    {
+                        return NotFound();
                     }
-                };
-
-                return Ok(rentDto);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Rents.Any(e => e.Id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
+            return BadRequest(ModelState);
         }
 
         //DELETE: api/Rents/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRent(int id)
         {
-            var rent = await _context.Rents.FindAsync(id);
-            if(rent == null)
+            if (ModelState.IsValid)
             {
-                return NotFound($"No rent found with ID {id}.");
+                var rent = await _context.Rents.FindAsync(id);
+                if (rent == null)
+                {
+                    return NotFound($"No rent found with ID {id}.");
+                }
+
+                _context.Rents.Remove(rent);
+                await _context.SaveChangesAsync();
+
+                return Ok($"Rent with ID {id} has been successfully deleted.");
             }
-
-            _context.Rents.Remove(rent);
-            await _context.SaveChangesAsync();
-
-            return Ok($"Rent with ID {id} has been successfully deleted.");
+            return BadRequest(ModelState);
         }
     }
 }
