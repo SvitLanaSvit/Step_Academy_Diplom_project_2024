@@ -1,4 +1,6 @@
-﻿INSERT INTO Categories
+﻿
+
+INSERT INTO Categories
 Values('House'),
 ('Apartment');
 
