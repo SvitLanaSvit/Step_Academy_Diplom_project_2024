@@ -6,6 +6,7 @@ using Microsoft.Extensions.Azure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Diplom_project_2024.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+//Add AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 builder.Services.AddIdentityApiEndpoints<User>().AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HousesDBContext>();
 builder.Services.AddDbContext<HousesDBContext>(options =>

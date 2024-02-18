@@ -75,6 +75,7 @@ namespace Diplom_project_2024.Controllers
                     claims.Add(new Claim(ClaimTypes.Role, "User"));
                     var us = await manager.FindByNameAsync(user.Username);
                     claims.Add(new Claim(ClaimTypes.NameIdentifier, us.Id));
+                    claims.Add(new Claim(ClaimTypes.Name, us.UserName));
 
                     if (User.IsInRole("Admin"))
                         claims.Add(new Claim(ClaimTypes.Role, "Admin"));

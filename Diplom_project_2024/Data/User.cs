@@ -10,5 +10,6 @@ namespace Diplom_project_2024.Data
         public List<Rent>? Rents { get; set; }
         public string? ImagePath { get; set; } = default!;
         public override string Email { get; set; }
+        public List<Chat>? Chats { get; set; }
     }
 }
