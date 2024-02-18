@@ -4,10 +4,6 @@
       "type": "secrets",
       "connectionId": "VaultUri"
     },
-    "storage1": {
-      "type": "storage",
-      "connectionId": "blob-string"
-    },
     "mssql1": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:HousesDB"
@@ -18,6 +14,16 @@
     },
     "apis1": {
       "type": "apis"
+    },
+    "secrets2": {
+      "type": "secrets",
+      "connectionId": "VaultUri",
+      "dynamicId": null
+    },
+    "storage1": {
+      "type": "storage",
+      "connectionId": "blob-string",
+      "dynamicId": null
     }
   }
 }

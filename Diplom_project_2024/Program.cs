@@ -10,8 +10,9 @@ using Diplom_project_2024.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri"));
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+
 
 // Add services to the container.
 
@@ -34,9 +35,9 @@ builder.Services.AddAzureClients(clientBuilder =>
     //clientBuilder.AddQueueServiceClient(builder.Configuration["HouseContainerQueue"], preferMsi: true); 
 
     clientBuilder
-    .AddBlobServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
+    .AddBlobServiceClient(builder.Configuration["blob-string--blob"], preferMsi: true);
     clientBuilder
-    .AddQueueServiceClient("DefaultEndpointsProtocol=https;AccountName=diplomproject;AccountKey=tdUCMr/Gs3H1M2K3sySHVwdDJ4GsWSk+25PJ1b5vHiqx5bEOX0G+bNJ9C49SMimHM7/3br3bRCWc+AStSoH9Gg==;EndpointSuffix=core.windows.net", preferMsi: true);
+    .AddQueueServiceClient(builder.Configuration["blob-string--queue"], preferMsi: true);
 });
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
@@ -71,6 +72,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
     });
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string:blob"]!, preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string:queue"]!, preferMsi: true);
+});
 
 var app = builder.Build();
 
