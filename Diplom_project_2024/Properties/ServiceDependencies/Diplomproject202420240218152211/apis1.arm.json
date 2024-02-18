@@ -49,17 +49,17 @@
           "contentVersion": "1.0.0.0",
           "resources": [
             {
-              "name": "Diplomproject2024api",
+              "name": "Diplomproject2024myapi",
               "type": "Microsoft.ApiManagement/service",
               "location": "[parameters('resourceLocation')]",
               "properties": {
                 "publisherEmail": "artuoh76@gmail.com",
-                "publisherName": "Step_Diplom",
+                "publisherName": "The Waggle",
                 "notificationSenderEmail": "apimgmt-noreply@mail.windowsazure.com",
                 "hostnameConfigurations": [
                   {
                     "type": "Proxy",
-                    "hostName": "diplomproject2024api.azure-api.net",
+                    "hostName": "diplomproject2024myapi.azure-api.net",
                     "encodedCertificate": null,
                     "keyVaultId": null,
                     "certificatePassword": null,
@@ -95,7 +95,7 @@
             },
             {
               "type": "Microsoft.ApiManagement/service/apis",
-              "name": "Diplomproject2024api/Diplomproject2024",
+              "name": "Diplomproject2024myapi/Diplomproject2024",
               "properties": {
                 "displayName": "Diplomproject2024",
                 "apiRevision": "1",
@@ -118,7 +118,7 @@
               },
               "apiVersion": "2019-12-01",
               "dependsOn": [
-                "Diplomproject2024api"
+                "Diplomproject2024myapi"
               ]
             }
           ]

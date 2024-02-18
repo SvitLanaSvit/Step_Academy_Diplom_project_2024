@@ -1,8 +1,5 @@
 {
   "dependencies": {
-    "apis1": {
-      "type": "apis"
-    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
@@ -14,6 +11,13 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:HousesDB"
+    },
+    "identityapp1": {
+      "ignored": "true",
+      "type": "identityapp"
+    },
+    "apis1": {
+      "type": "apis"
     }
   }
 }
