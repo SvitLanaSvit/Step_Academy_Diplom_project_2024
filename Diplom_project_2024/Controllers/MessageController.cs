@@ -30,14 +30,18 @@ namespace Diplom_project_2024.Controllers
         [HttpGet("ByChatId/{Id}")]
         public IActionResult GetMessagesByChatId(int Id) 
         {
-            var messages = context.Messages.Where(t=>t.ChatId == Id).Select(t=>new MessageDTO() 
-            {
-                Id=t.ChatId,
-                Content=t.Content,
-                SendingTime = t.SendingTime,
-                FromUser = mapper.Map<UserDTO>(t.FromUser),
-                IsRead=t.IsRead,
-            }).OrderBy(t=>t.SendingTime).ToList();
+            var messages = context.Messages.Where(t=>t.ChatId == Id).ToList().Select(m =>
+            //new MessageDTO()
+            //{
+            //    Id = m.Id,
+            //    Content = m.Content,
+            //    SendingTime = m.SendingTime,
+            //    FromUser = mapper.Map<UserDTO>(m.FromUser),
+            //    IsRead = m.IsRead,
+
+            //}
+             mapper.Map<MessageDTO>(m)
+            ).OrderBy(t=>t.SendingTime).ToList();
             return Ok(messages);
 
         }

@@ -7,7 +7,7 @@
         public User FromUser { get; set; } = new User();
         public int ChatId { get; set; }
         public Chat Chat { get; set; } = new Chat();
-        public string Content = default!;
+        public string Content { get; set; } = default!;
         public DateTime SendingTime { get; set; } = new DateTime();
         public bool IsRead { get; set; } 
     }
