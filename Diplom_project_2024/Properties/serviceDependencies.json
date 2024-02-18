@@ -17,8 +17,7 @@
     },
     "secrets2": {
       "type": "secrets",
-      "connectionId": "VaultUri",
-      "dynamicId": null
+      "connectionId": "VaultUri"
     },
     "storage1": {
       "type": "storage",

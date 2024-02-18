@@ -50,10 +50,10 @@
           "resources": [
             {
               "sku": {
-                "name": "Standard_LRS",
+                "name": "Standard_RAGRS",
                 "tier": "Standard"
               },
-              "kind": "Storage",
+              "kind": "StorageV2",
               "name": "diplomstorage",
               "type": "Microsoft.Storage/storageAccounts",
               "location": "[parameters('resourceLocation')]",

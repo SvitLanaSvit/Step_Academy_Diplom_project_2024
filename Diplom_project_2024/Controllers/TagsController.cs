@@ -23,7 +23,7 @@ namespace Diplom_project_2024.Controllers
             this.client = client;
             container = this.client.GetBlobContainerClient("tagimages");
             container.CreateIfNotExists();
-            container.SetAccessPolicy(PublicAccessType.BlobContainer);
+            container.SetAccessPolicy(PublicAccessType.Blob);
         }
         [HttpGet]
         public async Task<IActionResult> GetTags() 
