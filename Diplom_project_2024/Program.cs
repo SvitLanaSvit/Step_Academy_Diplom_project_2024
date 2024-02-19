@@ -10,8 +10,17 @@ using Diplom_project_2024.AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
+DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
+{
+    Diagnostics =
+    {
+        LoggedHeaderNames = { "x-ms-request-id" },
+        LoggedQueryParameters = { "api-version" },
+        IsLoggingContentEnabled = true
+    }
+};
 var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
 
 
 
