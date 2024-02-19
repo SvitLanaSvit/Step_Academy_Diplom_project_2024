@@ -97,11 +97,11 @@
               "type": "Microsoft.ApiManagement/service/apis",
               "name": "Diplomproject2024myapi/Diplomproject2024",
               "properties": {
-                "displayName": "Diplomproject2024",
+                "displayName": "Diplom_project_2024, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
                 "apiRevision": "1",
                 "description": null,
-                "subscriptionRequired": true,
-                "serviceUrl": null,
+                "subscriptionRequired": false,
+                "serviceUrl": "https://diplomproject202420240218152211.azurewebsites.net",
                 "path": "",
                 "protocols": [
                   "https"

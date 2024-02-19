@@ -3,21 +3,6 @@
     "apis1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/Diplomproject2024myapi/apis/Diplomproject2024",
       "type": "apis.azure"
-    },
-    "secrets2": {
-      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/Diplomproject202420240218152211/providers/Microsoft.ServiceLinker/linkers/VaultUri_1223468D9C",
-      "secretStore": "AzureAppSettings",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/Diplomproject2024vault",
-      "type": "secrets.keyVault",
-      "connectionId": "VaultUri"
-    },
-    "storage1": {
-      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/Diplomproject202420240218152211/providers/Microsoft.ServiceLinker/linkers/blobstring_5FBE02193E, /subscriptions/fb0b1152-54d2-44bf-8478-06dd08b79773/resourceGroups/Diplom_Project/providers/Microsoft.Web/sites/Diplomproject202420240218152211/providers/Microsoft.ServiceLinker/linkers/blobstring_4AFC6AB595",
-      "secretStore": "AzureKeyVault",
-      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/diplomstorage",
-      "type": "storage.azure",
-      "connectionId": "blob-string",
-      "dynamicId": null
     }
   }
 }
