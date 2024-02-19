@@ -358,14 +358,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         {
             if (ModelState.IsValid)
             {
-                //var house = await _context.Houses.FindAsync(id);
-                //if (house == null)
-                //{
-                //    return NotFound();
-                //}
-
-                //_context.Houses.Remove(house);
-                //await _context.SaveChangesAsync();
                 var house = await _context.Houses
                               .Include(h => h.Images)
                               .SingleOrDefaultAsync(h => h.Id == id);
