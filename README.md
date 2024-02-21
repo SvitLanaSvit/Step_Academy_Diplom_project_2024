@@ -56,3 +56,6 @@
 Система надає гнучкі можливості для всіх учасників процесу оренди та управління нерухомістю, підтримуючи високий рівень взаємодії та задоволення потреб користувачів.
 
 ![USE_CASE](https://github.com/SvitLanaSvit/Step_Academy_Diplom_project_2024/blob/dev/Diplom_project_2024/Documantation/USE_CASE_V2.png)
+
+## UML_SQL
+![UML_SQL](https://github.com/SvitLanaSvit/Step_Academy_Diplom_project_2024/blob/dev/Diplom_project_2024/Documantation/UML_SQL.png)
