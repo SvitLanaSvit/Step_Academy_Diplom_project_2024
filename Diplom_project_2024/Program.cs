@@ -27,7 +27,7 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
 });
 
 var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
+////builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
 
 var credentialOption = new DefaultAzureCredentialOptions
 {
