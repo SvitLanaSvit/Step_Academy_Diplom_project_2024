@@ -83,21 +83,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization(); //authorization
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-    //.AddJwtBearer(options =>
-    //{
-    //    options.TokenValidationParameters = new TokenValidationParameters
-    //    {
-    //        ValidateIssuer = true,
-    //        ValidateAudience = true,
-    //        ValidateLifetime = true,
-    //        ValidateIssuerSigningKey = true,
-    //        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-    //        ValidAudience = builder.Configuration["Jwt:Audience"],
-    //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-    //        ClockSkew = TimeSpan.Zero
-    //    };
-    //})
+    //.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 
 
@@ -108,9 +108,13 @@ var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
     ExcludeEnvironmentCredential = false,
     ExcludeManagedIdentityCredential = true,
     ExcludeVisualStudioCredential = true,
-    ExcludeAzureCliCredential = false,
+    ExcludeAzureCliCredential = true,
     ExcludeAzurePowerShellCredential = true,
     ExcludeSharedTokenCacheCredential = true,
+    ExcludeAzureDeveloperCliCredential = true,
+    ExcludeInteractiveBrowserCredential = true,
+    ExcludeVisualStudioCodeCredential = true,
+    ExcludeWorkloadIdentityCredential = true,
     TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
 });
 builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
