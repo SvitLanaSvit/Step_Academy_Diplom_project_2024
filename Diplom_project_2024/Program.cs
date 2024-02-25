@@ -26,6 +26,7 @@ using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsole
 //    }
 //};
 
+
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
     ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
@@ -95,18 +96,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             ClockSkew = TimeSpan.Zero
         };
-    })
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+    });
+
 
 
 var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
 //builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
-
-var credentialOption = new DefaultAzureCredentialOptions
+var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
 {
+    ExcludeEnvironmentCredential = false,
+    ExcludeManagedIdentityCredential = true,
+    ExcludeVisualStudioCredential = true,
+    ExcludeAzureCliCredential = false,
+    ExcludeAzurePowerShellCredential = true,
+    ExcludeSharedTokenCacheCredential = true,
     TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
-};
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(credentialOption));
+});
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
 
 
 var app = builder.Build();
