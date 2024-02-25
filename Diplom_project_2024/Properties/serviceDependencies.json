@@ -8,10 +8,6 @@
       "type": "mssql",
       "connectionId": "ConnectionStrings:HousesDB"
     },
-    "identityapp1": {
-      "ignored": "true",
-      "type": "identityapp"
-    },
     "storage1": {
       "type": "storage",
       "connectionId": "blob-string",
@@ -26,6 +22,9 @@
     "appInsights1": {
       "type": "appInsights",
       "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    },
+    "identityapp1": {
+      "type": "identityapp"
     }
   }
 }

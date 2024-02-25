@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Diplom_project_2024.AutoMapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +28,7 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
     ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
 });
 
-var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
 
-var credentialOption = new DefaultAzureCredentialOptions
-{
-    TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
-};
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(credentialOption));
 
 // Add services to the container.
 
@@ -97,8 +92,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             ClockSkew = TimeSpan.Zero
         };
-    });
+    })
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
 
+
+var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
+//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
+
+var credentialOption = new DefaultAzureCredentialOptions
+{
+    TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
+};
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(credentialOption));
 
 
 var app = builder.Build();
@@ -111,6 +116,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
