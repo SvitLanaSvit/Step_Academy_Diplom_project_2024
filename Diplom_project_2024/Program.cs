@@ -10,8 +10,11 @@ using Diplom_project_2024.AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Web;
+using Azure.Core.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
+
+using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsoleLogger();
 
 //DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
 //{
