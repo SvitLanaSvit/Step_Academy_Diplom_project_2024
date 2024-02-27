@@ -9,6 +9,8 @@ namespace Diplom_project_2024.Models.DTOs
         public double? Price { get; set; }
         public int SquareMeter { get; set; }
         public int Rooms { get; set; }
+        public int SleepingPlaces { get; set; }
+        public int ChildrenSleepingPlaces { get; set; }
         public AddressDTO? Address { get; set; }
         public CategoryDTO? Category { get; set; }
         public UserDTO? User { get; set; }

@@ -15,6 +15,8 @@ namespace Diplom_project_2024.Models.DTOs
 
         [Range(0, int.MaxValue, ErrorMessage = "Number of rooms must be a positive number.")]
         public int? Rooms { get; set; }
+        public int? SleepingPlaces { get; set; }
+        public int? ChildrenSleepingPlaces { get; set; }
 
         public int? CategoryId { get; set; }
 
