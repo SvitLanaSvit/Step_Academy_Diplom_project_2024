@@ -191,6 +191,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Price = houseCreateDTO.Price,
                     SquareMeter = houseCreateDTO.SquareMeter,
                     Rooms = houseCreateDTO.Rooms,
+                    SleepingPlaces = houseCreateDTO.SleepingPlaces,
+                    ChildrenSleepingPlaces = houseCreateDTO.ChildrenSleepingPlaces,
                     AddressId = newAddress.Id,
                     CategoryId = houseCreateDTO.CategoryId,
                     UserId = houseCreateDTO.UserId!,
