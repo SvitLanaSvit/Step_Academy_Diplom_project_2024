@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Diplom_project_2024.Data;
+using Diplom_project_2024.Functions;
 using Diplom_project_2024.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -77,6 +78,23 @@ namespace Diplom_project_2024.Controllers
                     await SendMessage(sentMessage, chat, currentUser,context);
                     return Ok("Message was sent!");
                 }
+            }
+            return BadRequest(ModelState);
+        }
+        [Authorize]
+        [HttpPut("EditMessage/{Id}")]
+        public async Task<IActionResult> EditMessage(MessageEditDTO dto)
+        {
+            if(ModelState.IsValid)
+            {
+                var currUser = await UserFunctions.GetUser(userManager, User);
+                var message = await context.Messages.FirstAsync(t => t.Id == dto.Id);
+                if (message == null) return NotFound();
+                if (message.FromUserId != currUser.Id) return BadRequest("You are not sender and you do not have permission to edit this message");
+                message.Content = dto.Content;
+                context.Messages.Update(message);
+                await context.SaveChangesAsync();
+                return Ok($"Message with id {dto.Id} was editted");
             }
             return BadRequest(ModelState);
         }
