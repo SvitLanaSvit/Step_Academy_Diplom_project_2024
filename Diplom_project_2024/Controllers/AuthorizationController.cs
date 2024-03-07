@@ -43,11 +43,16 @@ namespace Diplom_project_2024.Controllers
                 {
                     // Генерируем секретный ключ на основе конфигурации
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
-
+                    List<Claim> claims = new List<Claim>();
+                    claims.Add(new Claim(ClaimTypes.Role, "User"));
+                    var us = await manager.FindByNameAsync(user.UserName);
+                    claims.Add(new Claim(ClaimTypes.NameIdentifier, us.Id));
+                    claims.Add(new Claim(ClaimTypes.Name, us.UserName));
                     // Создаем JWT токен
                     var token = new JwtSecurityToken(
                         issuer: configuration["Jwt:Issuer"],
                         audience: configuration["Jwt:Audience"],
+                        claims: claims,
                         expires: DateTime.UtcNow.AddHours(1), // Срок действия токена (1 час)
                         signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
                     );

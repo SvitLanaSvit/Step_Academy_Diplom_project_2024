@@ -27,6 +27,24 @@ using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsole
 //};
 
 
+var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
+//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
+//var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
+//{
+//    ExcludeEnvironmentCredential = false,
+//    ExcludeManagedIdentityCredential = true,
+//    ExcludeVisualStudioCredential = true,
+//    ExcludeAzureCliCredential = true,
+//    ExcludeAzurePowerShellCredential = true,
+//    ExcludeSharedTokenCacheCredential = true,
+//    ExcludeAzureDeveloperCliCredential = true,
+//    ExcludeInteractiveBrowserCredential = true,
+//    ExcludeVisualStudioCodeCredential = true,
+//    ExcludeWorkloadIdentityCredential = true,
+//    TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
+//});
+//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
+
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
     ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
@@ -61,8 +79,8 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
 //});
 builder.Services.AddAzureClients(clientBuilder =>
 {
-    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-str"]!, preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-str"]!, preferMsi: true);
+    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string"]!, preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string"]!, preferMsi: true);
 });
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
@@ -101,23 +119,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 
-    var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential(options));
-//var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
-//{
-//    ExcludeEnvironmentCredential = false,
-//    ExcludeManagedIdentityCredential = true,
-//    ExcludeVisualStudioCredential = true,
-//    ExcludeAzureCliCredential = true,
-//    ExcludeAzurePowerShellCredential = true,
-//    ExcludeSharedTokenCacheCredential = true,
-//    ExcludeAzureDeveloperCliCredential = true,
-//    ExcludeInteractiveBrowserCredential = true,
-//    ExcludeVisualStudioCodeCredential = true,
-//    ExcludeWorkloadIdentityCredential = true,
-//    TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
-//});
-//builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
+ 
 
 
 var app = builder.Build();
