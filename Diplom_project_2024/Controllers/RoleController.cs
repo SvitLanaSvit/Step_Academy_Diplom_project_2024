@@ -12,6 +12,7 @@ namespace Diplom_project_2024.Controllers
         public RoleController(RoleManager<IdentityRole> roleManager)
         {
             this.roleManager = roleManager;
+          
         }
         [HttpPost("create")]
         public async Task<IActionResult> CreateRole(string roleName)
@@ -20,7 +21,7 @@ namespace Diplom_project_2024.Controllers
             {
                 return BadRequest("Role name cant be empty");
             }
-
+            
             var existingRole = await roleManager.FindByNameAsync(roleName);
             if (existingRole != null)
             {

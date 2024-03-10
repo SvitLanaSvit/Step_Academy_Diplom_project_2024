@@ -1,5 +1,6 @@
 ﻿using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
+using Diplom_project_2024.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,19 +20,22 @@ namespace Diplom_project_2024.Controllers
         private readonly HousesDBContext context;
         private readonly IConfiguration configuration;
         private readonly SignInManager<User> signInManager;
-        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager)
+        private readonly IAuthenticationService authentication;
+
+        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager, IAuthenticationService authentication)
         {
             this.manager = manager;
             this.context = context;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.authentication = authentication;
         }
         [HttpPost("Registration")]
         public async Task<IActionResult> Registration(UserRegisterDTO user)
         {  
             if(ModelState.IsValid)
             {
-                var createdUser = new User() { UserName = user.UserName, Email = user.Email, DisplayName = user.DisplayName };
+                var createdUser = new User() { UserName = user.Email, Email = user.Email };
                 var check = await manager.FindByEmailAsync(createdUser.Email);
                 if(check != null)
                 {
@@ -45,7 +49,7 @@ namespace Diplom_project_2024.Controllers
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
                     List<Claim> claims = new List<Claim>();
                     claims.Add(new Claim(ClaimTypes.Role, "User"));
-                    var us = await manager.FindByNameAsync(user.UserName);
+                    var us = await manager.FindByNameAsync(user.Email);
                     claims.Add(new Claim(ClaimTypes.NameIdentifier, us.Id));
                     claims.Add(new Claim(ClaimTypes.Name, us.UserName));
                     // Создаем JWT токен
@@ -71,35 +75,11 @@ namespace Diplom_project_2024.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDTO user)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var res = await signInManager.PasswordSignInAsync(user.Username, user.Password, user.RememberMe, false);
-                if (res.Succeeded)
-                {
-                    List<Claim> claims = new List<Claim>();
-                    claims.Add(new Claim(ClaimTypes.Role, "User"));
-                    var us = await manager.FindByNameAsync(user.Username);
-                    claims.Add(new Claim(ClaimTypes.NameIdentifier, us.Id));
-                    claims.Add(new Claim(ClaimTypes.Name, us.UserName));
-
-                    if (User.IsInRole("Admin"))
-                        claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
-                    var token = new JwtSecurityToken(
-                        issuer: configuration["Jwt:Issuer"],
-                        audience: configuration["Jwt:Audience"],
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddHours(1), // Срок действия токена (1 час)
-                        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                    );
-
-                    // Возвращаем JWT токен в ответе
-                    return Ok(new
-                    {
-                        token = new JwtSecurityTokenHandler().WriteToken(token)
-                    });
-                }
-                return BadRequest("Wrong login or password!");
+                if (!await authentication.ValidateUser(user)) return Unauthorized(new ErrorException("Wrong email or password"));
+                var tokenDto = await authentication.CreateToken(true);
+                return Ok(tokenDto);
             }
             return Unauthorized(ModelState);
         }

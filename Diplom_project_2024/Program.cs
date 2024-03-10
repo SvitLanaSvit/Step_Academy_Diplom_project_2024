@@ -8,9 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Diplom_project_2024.AutoMapper;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Identity.Web;
 using Azure.Core.Diagnostics;
+using Diplom_project_2024.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +51,20 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
 });
 
 
+//Добавление AuthenticationService
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -66,6 +79,7 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("HousesDb"));
     //options.UseSqlServer(builder.Configuration["HousesDB"]);
 });
+
 
 //builder.Services.AddAzureClients(clientBuilder =>
 //{
@@ -138,5 +152,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowAllOrigins");
 
 app.Run();
