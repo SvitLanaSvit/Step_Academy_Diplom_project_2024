@@ -57,9 +57,9 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
-        builder =>
+        build =>
         {
-            builder
+            build
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader();
@@ -138,6 +138,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 var app = builder.Build();
 
+app.UseCors("AllowAllOrigins");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -153,6 +155,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors("AllowAllOrigins");
+
 
 app.Run();

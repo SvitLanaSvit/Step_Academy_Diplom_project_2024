@@ -83,6 +83,23 @@ namespace Diplom_project_2024.Services
                 return Convert.ToBase64String(randomNumber);
             }
         }
+        private ClaimsPrincipal GetClaimsPrincipal(string token)
+        {
+            var jwtSettings = configuration.GetSection("Jwt");
+            var tokenValidationParametrs = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"])),
+                ClockSkew = TimeSpan.Zero
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return null;
+        }
         
     }
 }
