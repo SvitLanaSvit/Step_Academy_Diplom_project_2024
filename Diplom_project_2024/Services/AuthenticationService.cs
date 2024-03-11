@@ -33,7 +33,6 @@ namespace Diplom_project_2024.Services
             _user.RefreshToken = token.refreshToken;
             if (populateExp)
                 _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            _user.RefreshToken = token.refreshToken;
             await userManager.UpdateAsync(_user);
             return token;
         }
@@ -83,7 +82,7 @@ namespace Diplom_project_2024.Services
                 return Convert.ToBase64String(randomNumber);
             }
         }
-        private ClaimsPrincipal GetClaimsPrincipal(string token)
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
             var jwtSettings = configuration.GetSection("Jwt");
             var tokenValidationParametrs = new TokenValidationParameters
@@ -98,8 +97,26 @@ namespace Diplom_project_2024.Services
                 ClockSkew = TimeSpan.Zero
             };
             var tokenHandler = new JwtSecurityTokenHandler();
-            return null;
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token,tokenValidationParametrs, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if(jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+            return principal;
         }
-        
+
+        public async Task<TokenDTO> RefreshToken(TokenDTO tokenDTO)
+        {
+            var principal = GetPrincipalFromExpiredToken(tokenDTO.accessToken);
+            var user = await userManager.FindByNameAsync(principal.Identity.Name);
+            if(user is null|| user.RefreshToken!=tokenDTO.refreshToken||user.RefreshTokenExpiryTime<=DateTime.Now)
+            {
+                throw new Exception("Refresh token not valid");
+            }
+            _user = user;
+            return await CreateToken(false);
+        }
     }
 }
