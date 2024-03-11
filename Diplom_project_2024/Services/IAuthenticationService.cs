@@ -9,5 +9,6 @@ namespace Diplom_project_2024.Services
         public Task<TokenDTO> CreateToken(bool populateExp);
         public Task<bool> ValidateUser(UserLoginDTO user);
         public Task<TokenDTO> RefreshToken(TokenDTO tokenDTO);
+        public Task<bool> RegisterUser(UserRegisterDTO user);
     }
 }

@@ -36,7 +36,8 @@ namespace Diplom_project_2024.Controllers
                 User = new UserDTO
                 {
                     Id = r.User!.Id,
-                    DisplayName = r.User!.DisplayName,
+                    FirstName = r.User!.FirstName,
+                    Surname = r.User!.Surname,
                     Email = r.User.Email,
                     ImagePath = r.User.ImagePath,
                     UserName = r.User.UserName,
@@ -68,7 +69,8 @@ namespace Diplom_project_2024.Controllers
                     User = new UserDTO
                     {
                         Id = r.House.User!.Id,
-                        DisplayName = r.House.User.DisplayName,
+                        FirstName = r.House.User.FirstName,
+                        Surname = r.House.User.Surname,
                         Email = r.House.User.Email,
                         ImagePath = r.House.User.ImagePath,
                         UserName = r.House.User.UserName,
@@ -102,7 +104,8 @@ namespace Diplom_project_2024.Controllers
                 User = new UserDTO
                 {
                     Id = r.User!.Id,
-                    DisplayName = r.User!.DisplayName,
+                    FirstName = r.User!.FirstName,
+                    Surname = r.User!.Surname,
                     Email = r.User.Email,
                     ImagePath = r.User.ImagePath,
                     UserName = r.User.UserName,
@@ -134,7 +137,8 @@ namespace Diplom_project_2024.Controllers
                     User = new UserDTO
                     {
                         Id = r.House.User!.Id,
-                        DisplayName = r.House.User.DisplayName,
+                        FirstName = r.House.User.FirstName,
+                        Surname = r.House.User.Surname,
                         Email = r.House.User.Email,
                         ImagePath = r.House.User.ImagePath,
                         UserName = r.House.User.UserName,
@@ -234,7 +238,8 @@ namespace Diplom_project_2024.Controllers
                         User = new UserDTO
                         {
                             Id = rent.User!.Id,
-                            DisplayName = rent.User.DisplayName,
+                            FirstName = rent.User.FirstName,
+                            Surname =  rent.User.Surname,
                             Email = rent.User.Email,
                             ImagePath = rent.User.ImagePath,
                             UserName = rent.User.UserName,
@@ -266,7 +271,8 @@ namespace Diplom_project_2024.Controllers
                             User = new UserDTO
                             {
                                 Id = rent.House.User!.Id,
-                                DisplayName = rent.House.User.DisplayName,
+                                FirstName = rent.House.User.FirstName,
+                                Surname = rent.House.User.Surname,
                                 Email = rent.House.User.Email,
                                 ImagePath = rent.House.User.ImagePath,
                                 UserName = rent.House.User.UserName,

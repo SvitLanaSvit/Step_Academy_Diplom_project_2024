@@ -35,40 +35,19 @@ namespace Diplom_project_2024.Controllers
         {  
             if(ModelState.IsValid)
             {
-                var createdUser = new User() { UserName = user.Email, Email = user.Email };
-                var check = await manager.FindByEmailAsync(createdUser.Email);
-                if(check != null)
+                try
                 {
-                    return BadRequest("This Email already taken");
+                    var res = await authentication.RegisterUser(user);   
+                    if(res)
+                    {
+                        var token = await authentication.CreateToken(true);
+                        return Ok(token);
+                    }    
                 }
-                var res = await manager.CreateAsync(createdUser, user.Password);
-                
-                if (res.Succeeded)
+                catch(ErrorException ex)
                 {
-                    // Генерируем секретный ключ на основе конфигурации
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
-                    List<Claim> claims = new List<Claim>();
-                    claims.Add(new Claim(ClaimTypes.Role, "User"));
-                    var us = await manager.FindByNameAsync(user.Email);
-                    claims.Add(new Claim(ClaimTypes.NameIdentifier, us.Id));
-                    claims.Add(new Claim(ClaimTypes.Name, us.UserName));
-                    // Создаем JWT токен
-                    var token = new JwtSecurityToken(
-                        issuer: configuration["Jwt:Issuer"],
-                        audience: configuration["Jwt:Audience"],
-                        claims: claims,
-                        expires: DateTime.UtcNow.AddHours(1), // Срок действия токена (1 час)
-                        signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-                    );
-
-                    return Ok(
-                        new
-                        {
-                            token = new JwtSecurityTokenHandler().WriteToken(token)
-                        }
-                        );
+                    return BadRequest(ex.GetErrors());
                 }
-                return BadRequest(res.Errors);
             }
             return BadRequest(ModelState);
         }

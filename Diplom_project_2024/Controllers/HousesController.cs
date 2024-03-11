@@ -63,7 +63,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     User = new UserDTO
                     {
                         Id = h.User!.Id,
-                        DisplayName = h.User.DisplayName,
+                        FirstName = h.User.FirstName,
+                        Surname = h.User.Surname,
                         Email = h.User.Email,
                         ImagePath = h.User.ImagePath,
                         UserName = h.User.UserName,
@@ -124,7 +125,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     User = new UserDTO
                     {
                         Id = h.User!.Id,
-                        DisplayName = h.User.DisplayName,
+                        FirstName = h.User.FirstName,
+                        Surname = h.User.Surname,
                         Email = h.User.Email,
                         ImagePath = h.User.ImagePath,
                         UserName = h.User.UserName,
@@ -339,7 +341,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 User = new UserDTO
                 {
                     Id = house.User!.Id,
-                    DisplayName = house.User.DisplayName,
+                    FirstName = house.User.FirstName,
+                    Surname = house.User.Surname,
                     Email = house.User.Email,
                     ImagePath = house.User.ImagePath,
                     UserName = house.User.UserName,

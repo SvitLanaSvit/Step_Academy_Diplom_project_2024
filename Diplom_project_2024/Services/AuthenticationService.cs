@@ -113,10 +113,29 @@ namespace Diplom_project_2024.Services
             var user = await userManager.FindByNameAsync(principal.Identity.Name);
             if(user is null|| user.RefreshToken!=tokenDTO.refreshToken||user.RefreshTokenExpiryTime<=DateTime.Now)
             {
-                throw new Exception("Refresh token not valid");
+                throw new ErrorException("Refresh token not valid");
             }
             _user = user;
             return await CreateToken(false);
+        }
+
+        public async Task<bool> RegisterUser(UserRegisterDTO user)
+        {
+            var createdUser = new User() { UserName = user.Email, Email = user.Email };
+            var check = await userManager.FindByNameAsync(createdUser.Email);
+            if (check != null)
+            {
+                throw new ErrorException("This Email already taken");
+            }
+            var res = await userManager.CreateAsync(createdUser, user.Password);
+            if (res.Succeeded)
+            {
+                createdUser = await userManager.FindByNameAsync(user.Email);
+                _user = createdUser;
+                return true;
+            }
+            else
+                throw new ErrorException(res.Errors.ToList());
         }
     }
 }
