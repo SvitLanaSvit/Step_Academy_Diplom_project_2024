@@ -1,4 +1,5 @@
-﻿using Diplom_project_2024.Data;
+﻿using Azure.Core;
+using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
 using Diplom_project_2024.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -58,15 +59,13 @@ namespace Diplom_project_2024.Controllers
             {
                 if (!await authentication.ValidateUser(user)) return Unauthorized(new ErrorException("Wrong email or password"));
                 var tokenDto = await authentication.CreateToken(true);
-                // Создаем куки
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,
-                    Expires = DateTime.UtcNow.AddDays(1)
+                    Expires = DateTime.UtcNow.AddDays(1) // Установите необходимый срок действия куки
                 };
 
-                // Устанавливаем значение куки
-                Response.Cookies.Append("Authorization", $"Bearer {tokenDto.accessToken}", cookieOptions);
+                Response.Cookies.Append("AccessToken", tokenDto.accessToken, cookieOptions);
                 return Ok(tokenDto);
             }
             return Unauthorized(ModelState);

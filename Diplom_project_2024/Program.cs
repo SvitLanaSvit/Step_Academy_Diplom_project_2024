@@ -147,11 +147,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<AccessTokenMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
 app.UseCors("AllowAllOrigins");
+
+//app.UseCookiePolicy();
 
 app.UseAuthorization();
 
