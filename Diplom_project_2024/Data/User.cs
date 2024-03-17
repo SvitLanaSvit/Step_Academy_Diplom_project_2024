@@ -13,7 +13,8 @@ namespace Diplom_project_2024.Data
         public string? ImagePath { get; set; } = default!;
         public override string Email { get; set; }
         public List<Chat>? Chats { get; set; }
-        public string? RefreshToken { get; set; } 
-        public DateTime? RefreshTokenExpiryTime { get; set; }
+        //public string? RefreshToken { get; set; } 
+        //public DateTime? RefreshTokenExpiryTime { get; set; }
+        public List<RefreshToken>? RefreshTokens { get; set; }
     }
 }

@@ -147,7 +147,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<AccessTokenMiddleware>();
 
 app.UseHttpsRedirection();
 

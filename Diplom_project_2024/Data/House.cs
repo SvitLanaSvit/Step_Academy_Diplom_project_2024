@@ -24,5 +24,6 @@ namespace Diplom_project_2024.Data
         public List<Tag>? Tags { get; set; }
         public List<Image>? Images { get; set; }
         public List<Rent>? Rents { get; set; }
+        public List<BedInfo>? Beds { get; set;} // Жду уточнений по HouseInfo
     }
 }

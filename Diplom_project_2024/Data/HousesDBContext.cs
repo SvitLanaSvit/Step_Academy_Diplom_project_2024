@@ -13,6 +13,7 @@ namespace Diplom_project_2024.Data
         public DbSet<Address> Addresses { get; set; } = default!;
         public DbSet<Chat> Chats { get; set; } = default!;
         public DbSet<Message> Messages { get; set; } = default!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
         public HousesDBContext(DbContextOptions<HousesDBContext> options) : base(options)
         {
             Database.EnsureCreated();

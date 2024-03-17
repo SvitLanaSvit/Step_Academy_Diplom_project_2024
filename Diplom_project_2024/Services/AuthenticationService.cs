@@ -1,6 +1,7 @@
 ﻿using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,14 +14,16 @@ namespace Diplom_project_2024.Services
     {
         private readonly UserManager<User> userManager;
         private readonly IConfiguration configuration;
+        private readonly HousesDBContext context;
         private User? _user;
 
-        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration)
+        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, HousesDBContext context)
         {
             this.userManager = userManager;
             this.configuration = configuration;
+            this.context = context;
         }
-        public async Task<TokenDTO> CreateToken(bool populateExp)
+        public async Task<TokenDTO> CreateToken(string? oldToken = null)
         {
             var claims = await GetClaims();
             var signinCredential = GetSigningCredentials();
@@ -30,10 +33,30 @@ namespace Diplom_project_2024.Services
                 accessToken = new JwtSecurityTokenHandler().WriteToken(tokenOptions),
                 refreshToken = GenerateRefreshToken()
             };
-            _user.RefreshToken = token.refreshToken;
-            if (populateExp)
-                _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
-            await userManager.UpdateAsync(_user);
+            if(oldToken ==null)
+            {
+                RefreshToken refToken = new RefreshToken()
+                {
+                    UserId = _user.Id,
+                    User = _user,
+                    refreshToken = token.refreshToken,
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(30)
+                };
+                await context.RefreshTokens.AddAsync(refToken);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                var tok = await context.RefreshTokens.Include(t=>t.User).FirstOrDefaultAsync(t=>t.refreshToken==oldToken);
+                if (tok == null) throw new ErrorException("Your token is invalid");
+                tok.refreshToken = token.refreshToken;
+                context.Update(tok);
+                await context.SaveChangesAsync();
+            }
+            //_user.RefreshToken = token.refreshToken;
+            //if (populateExp)
+            //    _user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            //await userManager.UpdateAsync(_user);
             return token;
         }
         public async Task<bool> ValidateUser(UserLoginDTO user)
@@ -107,16 +130,20 @@ namespace Diplom_project_2024.Services
             return principal;
         }
 
-        public async Task<TokenDTO> RefreshToken(TokenDTO tokenDTO)
+        public async Task<TokenDTO> RefreshAccessToken(string refreshToken)
         {
-            var principal = GetPrincipalFromExpiredToken(tokenDTO.accessToken);
-            var user = await userManager.FindByNameAsync(principal.Identity.Name);
-            if(user is null|| user.RefreshToken!=tokenDTO.refreshToken||user.RefreshTokenExpiryTime<=DateTime.Now)
-            {
-                throw new ErrorException("Refresh token not valid");
-            }
+            var token = context.RefreshTokens.Include(t => t.User).FirstOrDefault(t => t.refreshToken==refreshToken);
+            if (token == null) throw new ErrorException("Refresh token is invalid");
+            var user = token.User;
+            if (user is null || token.RefreshTokenExpiryTime <= DateTime.UtcNow) throw new ErrorException("Refresh token is invalid");
+            //var principal = GetPrincipalFromExpiredToken(tokenDTO.accessToken);
+            //var user = await userManager.FindByNameAsync(principal.Identity.Name);
+            //if(user is null|| user.RefreshToken!=tokenDTO.refreshToken||user.RefreshTokenExpiryTime<=DateTime.Now)
+            //{
+            //    throw new ErrorException("Refresh token not valid");
+            //}
             _user = user;
-            return await CreateToken(false);
+            return await CreateToken(token.refreshToken);
         }
 
         public async Task<bool> RegisterUser(UserRegisterDTO user)

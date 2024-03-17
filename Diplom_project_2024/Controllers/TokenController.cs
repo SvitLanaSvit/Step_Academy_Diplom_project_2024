@@ -16,18 +16,18 @@ namespace Diplom_project_2024.Controllers
             this.authentication = authentication;
         }
         [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh(TokenDTO tokenDTO)
+        public async Task<IActionResult> Refresh(RefreshTokenDTO refreshTokenDTO)
         {
             if(ModelState.IsValid)
             {
                 try
                 {
-                    var tokenDtoToReturn = await authentication.RefreshToken(tokenDTO);
+                    var tokenDtoToReturn = await authentication.RefreshAccessToken(refreshTokenDTO.refreshToken);
                     return Ok(tokenDtoToReturn);
                 }
-                catch (Exception ex)
+                catch (ErrorException ex)
                 {
-                    return BadRequest(new ErrorException(ex.Message));
+                    return BadRequest(ex.GetErrors());
                 }
             }
             return BadRequest(ModelState);

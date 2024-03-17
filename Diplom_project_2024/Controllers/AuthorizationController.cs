@@ -41,7 +41,7 @@ namespace Diplom_project_2024.Controllers
                     var res = await authentication.RegisterUser(user);   
                     if(res)
                     {
-                        var token = await authentication.CreateToken(true);
+                        var token = await authentication.CreateToken();
                         return Ok(token);
                     }    
                 }
@@ -58,14 +58,7 @@ namespace Diplom_project_2024.Controllers
             if (ModelState.IsValid)
             {
                 if (!await authentication.ValidateUser(user)) return Unauthorized(new ErrorException("Wrong email or password"));
-                var tokenDto = await authentication.CreateToken(true);
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTime.UtcNow.AddDays(1) // Установите необходимый срок действия куки
-                };
-
-                Response.Cookies.Append("AccessToken", tokenDto.accessToken, cookieOptions);
+                var tokenDto = await authentication.CreateToken();
                 return Ok(tokenDto);
             }
             return Unauthorized(ModelState);
