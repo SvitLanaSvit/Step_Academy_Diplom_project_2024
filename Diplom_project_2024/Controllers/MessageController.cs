@@ -2,6 +2,7 @@
 using Diplom_project_2024.Data;
 using Diplom_project_2024.Functions;
 using Diplom_project_2024.Models.DTOs;
+using Diplom_project_2024.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -52,13 +53,13 @@ namespace Diplom_project_2024.Controllers
         {
             if(ModelState.IsValid)
             {
-                if (sentMessage.ToUserId == null && sentMessage.ChatId == null) return BadRequest("ChatId and UserId at least one of these needed");
+                if (sentMessage.ToUserId == null && sentMessage.ChatId == null) return BadRequest(new ErrorException("ChatId and UserId at least one of these needed").GetErrors()); ;
                 var currentUser = await userManager.FindByNameAsync(User.Identity.Name);
                 if (currentUser == null) return Unauthorized();
                 if(sentMessage.ChatId!= null)
                 {
                     var chat = await context.Chats.Include(t=>t.Messages).FirstOrDefaultAsync(t=>t.Id==sentMessage.ChatId);
-                    if (chat == null) return NotFound($"Chat with id {sentMessage.ChatId} wasn't found!");
+                    if (chat == null) return NotFound(new ErrorException($"Chat with id {sentMessage.ChatId} wasn't found!").GetErrors());
 
                     await SendMessage(sentMessage,chat,currentUser, context);
                     return Ok("Message was sent!");

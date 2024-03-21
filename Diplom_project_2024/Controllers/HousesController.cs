@@ -65,10 +65,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         Id = h.User!.Id,
                         FirstName = h.User.FirstName,
                         Surname = h.User.Surname,
-                        Email = h.User.Email,
-                        ImagePath = h.User.ImagePath,
-                        UserName = h.User.UserName,
-                        PhoneNumber = h.User.PhoneNumber
+                        Email = h.User.Email
                     },
                     IsModerated = h.IsModerated,
                     Tags = h.Tags!.Select(t => new TagDTO 
@@ -127,10 +124,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         Id = h.User!.Id,
                         FirstName = h.User.FirstName,
                         Surname = h.User.Surname,
-                        Email = h.User.Email,
-                        ImagePath = h.User.ImagePath,
-                        UserName = h.User.UserName,
-                        PhoneNumber = h.User.PhoneNumber
+                        Email = h.User.Email
                     },
                     IsModerated = h.IsModerated,
                     Tags = h.Tags!.Select(t => new TagDTO
@@ -343,10 +337,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Id = house.User!.Id,
                     FirstName = house.User.FirstName,
                     Surname = house.User.Surname,
-                    Email = house.User.Email,
-                    ImagePath = house.User.ImagePath,
-                    UserName = house.User.UserName,
-                    PhoneNumber = house.User.PhoneNumber
+                    Email = house.User.Email
                 },
                 Tags = house.Tags?.Select(t => new TagDTO
                 {

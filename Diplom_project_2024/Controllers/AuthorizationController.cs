@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Diplom_project_2024.CustomErrors;
 using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
 using Diplom_project_2024.Services;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -47,7 +49,7 @@ namespace Diplom_project_2024.Controllers
                 }
                 catch(ErrorException ex)
                 {
-                    return BadRequest(ex.GetErrors());
+                    return BadRequest(ex.GetErrors()); 
                 }
             }
             return BadRequest(ModelState);
@@ -57,7 +59,7 @@ namespace Diplom_project_2024.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (!await authentication.ValidateUser(user)) return Unauthorized(new ErrorException("Wrong email or password"));
+                if (!await authentication.ValidateUser(user)) return Unauthorized(new Error("Wrong email or password"));
                 var tokenDto = await authentication.CreateToken();
                 return Ok(tokenDto);
             }
@@ -69,6 +71,15 @@ namespace Diplom_project_2024.Controllers
         {
             var user = await manager.GetUserAsync(User);
             await manager.AddToRoleAsync(user, "Admin");
+            return Ok();
+        }
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout(RefreshTokenDTO refreshToken)
+        {
+            var refToken = await context.RefreshTokens.FirstOrDefaultAsync(t=> t.refreshToken== refreshToken.refreshToken);
+            if (refToken == null) return BadRequest(new Error("Invalid token"));
+            context.RefreshTokens.Remove(refToken);
+            await context.SaveChangesAsync();
             return Ok();
         }
     }

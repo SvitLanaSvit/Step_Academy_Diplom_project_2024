@@ -38,10 +38,7 @@ namespace Diplom_project_2024.Controllers
                     Id = r.User!.Id,
                     FirstName = r.User!.FirstName,
                     Surname = r.User!.Surname,
-                    Email = r.User.Email,
-                    ImagePath = r.User.ImagePath,
-                    UserName = r.User.UserName,
-                    PhoneNumber = r.User.PhoneNumber
+                    Email = r.User.Email
                 },
                 House = new HouseDTO
                 {
@@ -71,10 +68,7 @@ namespace Diplom_project_2024.Controllers
                         Id = r.House.User!.Id,
                         FirstName = r.House.User.FirstName,
                         Surname = r.House.User.Surname,
-                        Email = r.House.User.Email,
-                        ImagePath = r.House.User.ImagePath,
-                        UserName = r.House.User.UserName,
-                        PhoneNumber = r.House.User.PhoneNumber
+                        Email = r.House.User.Email
                     }
                 }
             })
@@ -106,10 +100,7 @@ namespace Diplom_project_2024.Controllers
                     Id = r.User!.Id,
                     FirstName = r.User!.FirstName,
                     Surname = r.User!.Surname,
-                    Email = r.User.Email,
-                    ImagePath = r.User.ImagePath,
-                    UserName = r.User.UserName,
-                    PhoneNumber = r.User.PhoneNumber
+                    Email = r.User.Email
                 },
                 House = new HouseDTO
                 {
@@ -139,10 +130,7 @@ namespace Diplom_project_2024.Controllers
                         Id = r.House.User!.Id,
                         FirstName = r.House.User.FirstName,
                         Surname = r.House.User.Surname,
-                        Email = r.House.User.Email,
-                        ImagePath = r.House.User.ImagePath,
-                        UserName = r.House.User.UserName,
-                        PhoneNumber = r.House.User.PhoneNumber
+                        Email = r.House.User.Email
                     }
                 }
             })
@@ -240,10 +228,7 @@ namespace Diplom_project_2024.Controllers
                             Id = rent.User!.Id,
                             FirstName = rent.User.FirstName,
                             Surname =  rent.User.Surname,
-                            Email = rent.User.Email,
-                            ImagePath = rent.User.ImagePath,
-                            UserName = rent.User.UserName,
-                            PhoneNumber = rent.User.PhoneNumber
+                            Email = rent.User.Email
                         },
                         House = new HouseDTO
                         {
@@ -273,10 +258,7 @@ namespace Diplom_project_2024.Controllers
                                 Id = rent.House.User!.Id,
                                 FirstName = rent.House.User.FirstName,
                                 Surname = rent.House.User.Surname,
-                                Email = rent.House.User.Email,
-                                ImagePath = rent.House.User.ImagePath,
-                                UserName = rent.House.User.UserName,
-                                PhoneNumber = rent.House.User.PhoneNumber
+                                Email = rent.House.User.Email
                             }
 
                         }

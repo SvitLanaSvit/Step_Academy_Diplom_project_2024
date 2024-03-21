@@ -125,7 +125,7 @@ namespace Diplom_project_2024.Services
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if(jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException("Invalid Token");
+                throw new ErrorException("Invalid Token");
             }
             return principal;
         }
@@ -162,7 +162,9 @@ namespace Diplom_project_2024.Services
                 return true;
             }
             else
-                throw new ErrorException(res.Errors.ToList());
+            {
+                throw new ErrorException(res.Errors.ToList()); 
+            }
         }
     }
 }
