@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using Diplom_project_2024.CustomErrors;
 
 namespace Diplom_project_2024.Controllers
 {
@@ -53,13 +54,13 @@ namespace Diplom_project_2024.Controllers
         {
             if(ModelState.IsValid)
             {
-                if (sentMessage.ToUserId == null && sentMessage.ChatId == null) return BadRequest(new ErrorException("ChatId and UserId at least one of these needed").GetErrors()); ;
+                if (sentMessage.ToUserId == null && sentMessage.ChatId == null) return BadRequest(new Error("ChatId and UserId at least one of these needed")); ;
                 var currentUser = await userManager.FindByNameAsync(User.Identity.Name);
                 if (currentUser == null) return Unauthorized();
                 if(sentMessage.ChatId!= null)
                 {
                     var chat = await context.Chats.Include(t=>t.Messages).FirstOrDefaultAsync(t=>t.Id==sentMessage.ChatId);
-                    if (chat == null) return NotFound(new ErrorException($"Chat with id {sentMessage.ChatId} wasn't found!").GetErrors());
+                    if (chat == null) return NotFound(new Error($"Chat with id {sentMessage.ChatId} wasn't found!"));
 
                     await SendMessage(sentMessage,chat,currentUser, context);
                     return Ok("Message was sent!");
@@ -67,7 +68,7 @@ namespace Diplom_project_2024.Controllers
                 else
                 {
                     var toUser = await userManager.FindByIdAsync(sentMessage.ToUserId);
-                    if (toUser == null) return NotFound($"User with id {sentMessage.ToUserId} wasn't found!");
+                    if (toUser == null) return NotFound(new Error($"User with id {sentMessage.ToUserId} wasn't found!"));
                     List<User> users = new List<User>() { currentUser, toUser };
                     Chat chat = new Chat()
                     {
@@ -91,7 +92,7 @@ namespace Diplom_project_2024.Controllers
                 var currUser = await UserFunctions.GetUser(userManager, User);
                 var message = await context.Messages.FirstAsync(t => t.Id == dto.Id);
                 if (message == null) return NotFound();
-                if (message.FromUserId != currUser.Id) return BadRequest("You are not sender and you do not have permission to edit this message");
+                if (message.FromUserId != currUser.Id) return BadRequest(new Error("You are not sender and you do not have permission to edit this message"));
                 message.Content = dto.Content;
                 context.Messages.Update(message);
                 await context.SaveChangesAsync();
