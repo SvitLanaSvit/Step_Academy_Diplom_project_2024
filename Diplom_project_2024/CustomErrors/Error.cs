@@ -9,19 +9,19 @@ namespace Diplom_project_2024.CustomErrors
     {
         public Error(string error)
         {
-            this.error = new { error };
+            this.error = error;
         }
 
         public Error(List<IdentityError> errors)
         {
-            error = new { error = errors.Select(t => t.Description).ToList() };
+            error = errors.Select(t => t.Description).ToList();
         }
 
         public object error { get; set; }
 
         public object getError()
         {
-            return error;
+            return new {error = error };
         }
     }
 }
