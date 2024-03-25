@@ -43,8 +43,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Price = h.Price,
                     SquareMeter = h.SquareMeter,
                     Rooms = h.Rooms,
-                    SleepingPlaces = h.SleepingPlaces,
-                    ChildrenSleepingPlaces = h.ChildrenSleepingPlaces,
                     Address = new AddressDTO
                     {
                         Id = h.Address!.Id,
@@ -102,8 +100,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Price = h.Price,
                     SquareMeter = h.SquareMeter,
                     Rooms = h.Rooms,
-                    SleepingPlaces = h.SleepingPlaces,
-                    ChildrenSleepingPlaces = h.ChildrenSleepingPlaces,
                     Address = new AddressDTO
                     {
                         Id = h.Address!.Id,
@@ -187,8 +183,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Price = houseCreateDTO.Price,
                     SquareMeter = houseCreateDTO.SquareMeter,
                     Rooms = houseCreateDTO.Rooms,
-                    SleepingPlaces = houseCreateDTO.SleepingPlaces,
-                    ChildrenSleepingPlaces = houseCreateDTO.ChildrenSleepingPlaces,
                     AddressId = newAddress.Id,
                     CategoryId = houseCreateDTO.CategoryId,
                     UserId = houseCreateDTO.UserId!,
@@ -272,8 +266,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             house.Price = houseUpdateDTO.Price ?? house.Price;
             house.SquareMeter = houseUpdateDTO.SquareMeter ?? house.SquareMeter;
             house.Rooms = houseUpdateDTO.Rooms ?? house.Rooms;
-            house.SleepingPlaces = houseUpdateDTO.SleepingPlaces ?? house.SleepingPlaces;
-            house.ChildrenSleepingPlaces = houseUpdateDTO.ChildrenSleepingPlaces ?? house.SleepingPlaces;
 
             if (houseUpdateDTO.CategoryId.HasValue)
             {
@@ -314,8 +306,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 Price = house.Price,
                 SquareMeter = house.SquareMeter,
                 Rooms = house.Rooms,
-                SleepingPlaces = house.SleepingPlaces,
-                ChildrenSleepingPlaces = house.ChildrenSleepingPlaces,
                 IsModerated = house.IsModerated,
                 Address = new AddressDTO
                 {

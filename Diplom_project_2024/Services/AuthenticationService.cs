@@ -75,7 +75,7 @@ namespace Diplom_project_2024.Services
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(3), // Срок действия токена (3 часа)
+                expires: DateTime.UtcNow.AddDays(1), // Срок действия токена (1 день)
                 signingCredentials: signingCredentials
             );
             return token;

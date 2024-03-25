@@ -4,6 +4,7 @@ using Diplom_project_2024.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diplom_project_2024.Migrations
 {
     [DbContext(typeof(HousesDBContext))]
-    partial class HousesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240325105710_EditUserAddPaymentData")]
+    partial class EditUserAddPaymentData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,61 +167,6 @@ namespace Diplom_project_2024.Migrations
                     b.ToTable("Chats");
                 });
 
-            modelBuilder.Entity("Diplom_project_2024.Data.Comment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("HouseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HouseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Diplom_project_2024.Data.FavoriteHouse", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("HouseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HouseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FavoriteHouses");
-                });
-
             modelBuilder.Entity("Diplom_project_2024.Data.House", b =>
                 {
                     b.Property<int>("Id")
@@ -233,6 +181,9 @@ namespace Diplom_project_2024.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ChildrenSleepingPlaces")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -244,6 +195,9 @@ namespace Diplom_project_2024.Migrations
                         .HasColumnType("float");
 
                     b.Property<int>("Rooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SleepingPlaces")
                         .HasColumnType("int");
 
                     b.Property<int>("SquareMeter")
@@ -453,13 +407,6 @@ namespace Diplom_project_2024.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContactEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("DateOfBirth")
-                        .HasColumnType("date");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -469,10 +416,6 @@ namespace Diplom_project_2024.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -497,7 +440,6 @@ namespace Diplom_project_2024.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -722,44 +664,6 @@ namespace Diplom_project_2024.Migrations
                     b.Navigation("BedType");
                 });
 
-            modelBuilder.Entity("Diplom_project_2024.Data.Comment", b =>
-                {
-                    b.HasOne("Diplom_project_2024.Data.House", "House")
-                        .WithMany("Comments")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Diplom_project_2024.Data.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("House");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Diplom_project_2024.Data.FavoriteHouse", b =>
-                {
-                    b.HasOne("Diplom_project_2024.Data.House", "House")
-                        .WithMany("Fans")
-                        .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Diplom_project_2024.Data.User", "User")
-                        .WithMany("FavoriteHouses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("House");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Diplom_project_2024.Data.House", b =>
                 {
                     b.HasOne("Diplom_project_2024.Data.Address", "Address")
@@ -939,10 +843,6 @@ namespace Diplom_project_2024.Migrations
 
             modelBuilder.Entity("Diplom_project_2024.Data.House", b =>
                 {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Fans");
-
                     b.Navigation("Images");
 
                     b.Navigation("Rents");
@@ -950,10 +850,6 @@ namespace Diplom_project_2024.Migrations
 
             modelBuilder.Entity("Diplom_project_2024.Data.User", b =>
                 {
-                    b.Navigation("Comments");
-
-                    b.Navigation("FavoriteHouses");
-
                     b.Navigation("Houses");
 
                     b.Navigation("PaymentData");

@@ -10,6 +10,7 @@ namespace Diplom_project_2024.AutoMapper
         {
             CreateMap<User, UserDTO>();
             CreateMap<Message, MessageDTO>();
+            CreateMap<PaymentData,PaymentDataDTO>();
         }
     }
-}
+}   

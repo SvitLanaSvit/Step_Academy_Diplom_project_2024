@@ -52,7 +52,7 @@ namespace Diplom_project_2024.Controllers
                     return BadRequest(ex.GetErrors()); 
                 }
             }
-            return BadRequest(ModelState);
+            return BadRequest(new Error("Required fields were not specified"));
         }
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDTO user)
@@ -63,7 +63,7 @@ namespace Diplom_project_2024.Controllers
                 var tokenDto = await authentication.CreateToken();
                 return Ok(tokenDto);
             }
-            return Unauthorized(ModelState);
+            return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize(Roles = "User")]
         [HttpGet("GetAdmin")]
