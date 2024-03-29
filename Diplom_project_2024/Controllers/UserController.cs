@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Diplom_project_2024.CustomErrors;
 using Microsoft.EntityFrameworkCore;
 using Diplom_project_2024.Models;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 
 namespace Diplom_project_2024.Controllers
 {
@@ -20,12 +22,18 @@ namespace Diplom_project_2024.Controllers
         private readonly HousesDBContext context;
         private readonly UserManager<User> userManager;
         private readonly IMapper mapper;
+        private readonly BlobServiceClient client;
+        private readonly BlobContainerClient container;
 
-        public UserController(HousesDBContext context, UserManager<User> userManager, IMapper mapper)
+        public UserController(HousesDBContext context, UserManager<User> userManager, IMapper mapper, BlobServiceClient client)
         {
             this.context = context;
             this.userManager = userManager;
             this.mapper = mapper;
+            this.client = client;
+            container = this.client.GetBlobContainerClient("userimages");
+            container.CreateIfNotExists();
+            container.SetAccessPolicy(PublicAccessType.Blob);
         }
         [Authorize]
         [HttpGet("GetUserId")]
@@ -47,7 +55,7 @@ namespace Diplom_project_2024.Controllers
             return Ok(userDTO);
         }
         [Authorize]
-        [HttpPost("SetPaymentData")]
+        [HttpPatch("SetPaymentData")]
         public async Task<IActionResult> SetPaymentData(PaymentDataDTO paymentDTO)
         {
             if(ModelState.IsValid)
@@ -89,7 +97,7 @@ namespace Diplom_project_2024.Controllers
             return Ok(paymentDTO);
         }
         [Authorize]
-        [HttpPost("SetFirstName")]
+        [HttpPatch("SetFirstName")]
         public async Task<IActionResult> SetFirstname(SetFirstNameModel firstname)
         {
             if (ModelState.IsValid)
@@ -106,7 +114,7 @@ namespace Diplom_project_2024.Controllers
             return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize]
-        [HttpPost("SetSurname")]
+        [HttpPatch("SetSurname")]
         public async Task<IActionResult> SetSurname(SetSurnameModel surname)
         {
             if (ModelState.IsValid)
@@ -123,7 +131,7 @@ namespace Diplom_project_2024.Controllers
             return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize]
-        [HttpPost("SetGender")]
+        [HttpPatch("SetGender")]
         public async Task<IActionResult> SetGender(SetGenderModel gender)
         {
             if (ModelState.IsValid)
@@ -140,7 +148,7 @@ namespace Diplom_project_2024.Controllers
             return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize]
-        [HttpPost("SetDateOfBirth")]
+        [HttpPatch("SetDateOfBirth")]
         public async Task<IActionResult> SetDateOfBirth(SetDateOfBirthModel dateOfBirthModel)
         {
             if (ModelState.IsValid)
@@ -154,7 +162,7 @@ namespace Diplom_project_2024.Controllers
             return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize]
-        [HttpPost("SetPhoneNumber")]
+        [HttpPatch("SetPhoneNumber")]
         public async Task<IActionResult> SetPhoneNumber(SetPhoneNumber phoneNumber)
         {
             if (ModelState.IsValid)
@@ -171,7 +179,7 @@ namespace Diplom_project_2024.Controllers
             return BadRequest(new Error("Required fields were not specified"));
         }
         [Authorize]
-        [HttpPost("SetContactEmail")]
+        [HttpPatch("SetContactEmail")]
         public async Task<IActionResult> SetContactEmail(SetContactEmail contactEmail)
         {
             if (ModelState.IsValid)
@@ -213,5 +221,69 @@ namespace Diplom_project_2024.Controllers
             };
             return Ok(userContactInfoDTO);
         }
+
+        [Authorize]
+        [HttpGet("GetProfileInfo")]
+        public async Task<IActionResult> GetProfileInfo()
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            UserProfileInfoDTO userProfileDTO = mapper.Map<UserProfileInfoDTO>(user);
+            var payment = await context.PaymentDatas.FirstOrDefaultAsync(t=>t.UserId==user.Id);
+            if(payment != null)
+            {
+                userProfileDTO.cardNumber = payment.CardNumber;
+                userProfileDTO.expireDate = payment.ExpireDate;
+                userProfileDTO.cvv = payment.CVV;
+            }
+            var houses = context.Houses.Include(t=>t.Comments).Where(t=>t.UserId==user.Id).ToList();
+            userProfileDTO.countOfHouses = houses.Count;
+            int countOfComments=0;
+            houses.ForEach(t => countOfComments+= t.Comments.Count);
+            userProfileDTO.countOfComments = countOfComments;
+            return Ok(userProfileDTO);
+        }
+        [Authorize]
+        [HttpPatch("SetProfileInfo")]
+        public async Task<IActionResult> SetProfileInfo(UserProfileInfoSetDTO profileInfo)
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            if(profileInfo.contactEmail != null) user.ContactEmail = profileInfo.contactEmail;
+            if(profileInfo.surname != null) user.Surname = profileInfo.surname;
+            if(profileInfo.firstName!=null) user.FirstName = profileInfo.firstName;
+            if(profileInfo.gender!=null) user.Gender = profileInfo.gender;
+            if(profileInfo.phoneNumber!=null) user.PhoneNumber = profileInfo.phoneNumber;
+            if(profileInfo.dateOfBirth!=null) user.DateOfBirth = profileInfo.dateOfBirth;
+
+            if (profileInfo.image != null)
+            {
+                if (user.ImagePath != null)
+                {
+                    BlobContainerFunctions.DeleteImage(container, user.ImagePath);
+                }
+                var url = await BlobContainerFunctions.UploadImage(container, profileInfo.image);
+                user.ImagePath = url;
+            }
+            await userManager.UpdateAsync(user);
+            return Ok();
+        }
+        [Authorize]
+        [HttpPatch("SetProfileImage")]
+        public async Task<IActionResult> SetProfileImage(IFormFile? image)
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            if (image != null)
+            {
+                if (user.ImagePath != null)
+                {
+                    BlobContainerFunctions.DeleteImage(container, user.ImagePath);
+                }
+                var url = await BlobContainerFunctions.UploadImage(container, image);
+                user.ImagePath = url;
+                await userManager.UpdateAsync(user);
+            }
+            return Ok();
+            
+        }
+
     }
 }

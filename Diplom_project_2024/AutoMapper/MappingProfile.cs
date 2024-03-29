@@ -9,6 +9,7 @@ namespace Diplom_project_2024.AutoMapper
         public MappingProfile() 
         {
             CreateMap<User, UserDTO>();
+            CreateMap<User, UserProfileInfoDTO>();
             CreateMap<Message, MessageDTO>();
             CreateMap<PaymentData,PaymentDataDTO>();
         }

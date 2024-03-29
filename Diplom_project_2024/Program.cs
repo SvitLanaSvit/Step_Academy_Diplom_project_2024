@@ -93,8 +93,9 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
 //});
 builder.Services.AddAzureClients(clientBuilder =>
 {
-    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string"]!, preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string"]!, preferMsi: true);
+    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
+    
 });
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
