@@ -9,6 +9,6 @@
         public DateOnly? dateOfBirth { get; set; }
         public string? contactEmail { get; set; } 
         public string? phoneNumber { get; set; }
-        public IFormFile? image { get; set; }
+        //public IFormFile? image { get; set; }
     }
 }

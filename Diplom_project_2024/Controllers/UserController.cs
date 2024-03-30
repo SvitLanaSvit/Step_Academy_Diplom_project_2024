@@ -254,15 +254,15 @@ namespace Diplom_project_2024.Controllers
             if(profileInfo.phoneNumber!=null) user.PhoneNumber = profileInfo.phoneNumber;
             if(profileInfo.dateOfBirth!=null) user.DateOfBirth = profileInfo.dateOfBirth;
 
-            if (profileInfo.image != null)
-            {
-                if (user.ImagePath != null)
-                {
-                    BlobContainerFunctions.DeleteImage(container, user.ImagePath);
-                }
-                var url = await BlobContainerFunctions.UploadImage(container, profileInfo.image);
-                user.ImagePath = url;
-            }
+            //if (profileInfo.image != null)
+            //{
+            //    if (user.ImagePath != null)
+            //    {
+            //        BlobContainerFunctions.DeleteImage(container, user.ImagePath);
+            //    }
+            //    var url = await BlobContainerFunctions.UploadImage(container, profileInfo.image);
+            //    user.ImagePath = url;
+            //}
             await userManager.UpdateAsync(user);
             return Ok();
         }
