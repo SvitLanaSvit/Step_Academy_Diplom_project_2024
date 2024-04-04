@@ -284,6 +284,39 @@ namespace Diplom_project_2024.Controllers
             return Ok();
             
         }
+        [Authorize]
+        [HttpDelete("DeletePaymentData")]
+        public async Task<IActionResult> DeletePaymentData()
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            var payment = await context.PaymentDatas.FirstOrDefaultAsync(t => t.UserId == user.Id);
+            if (payment == null) return Ok();
+            context.PaymentDatas.Remove(payment);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+        [Authorize]
+        [HttpDelete("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(PasswordChangeDTO passwordChangeDTO)
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            var res = await userManager.ChangePasswordAsync(user,passwordChangeDTO.oldPassword,passwordChangeDTO.password);
+            if (res.Succeeded)
+            {
+                return Ok();
+            }
+            return BadRequest(new Error("Wrong password"));
+        }
+        [Authorize]
+        [HttpDelete("DeleteAccount")]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await UserFunctions.GetUser(userManager, User);
+            var res = await userManager.DeleteAsync(user);
+            if (res.Succeeded)
+                return Ok();
+            return BadRequest(new Error("Unknown error"));
+        }
 
     }
 }
