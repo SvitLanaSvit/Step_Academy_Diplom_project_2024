@@ -296,7 +296,7 @@ namespace Diplom_project_2024.Controllers
             return Ok();
         }
         [Authorize]
-        [HttpDelete("ChangePassword")]
+        [HttpPatch("ChangePassword")]
         public async Task<IActionResult> ChangePassword(PasswordChangeDTO passwordChangeDTO)
         {
             var user = await UserFunctions.GetUser(userManager, User);
