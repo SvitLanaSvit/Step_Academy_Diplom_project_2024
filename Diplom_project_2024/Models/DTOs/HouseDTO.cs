@@ -7,15 +7,18 @@ namespace Diplom_project_2024.Models.DTOs
         public int Id { get; set; }
         public string? Description { get; set; }
         public double? Price { get; set; }
-        public int SquareMeter { get; set; }
-        public int Rooms { get; set; }
-        public int SleepingPlaces { get; set; }
-        public int ChildrenSleepingPlaces { get; set; }
+        public string Name { get; set; } = default!;
+        public int Beds { get; set; }
+        public int ChildBeds { get; set; }
+        public int BabyCribs { get; set; }
+        public int Pets { get; set; }
+        public int Bathrooms { get; set; }
         public AddressDTO? Address { get; set; }
         public CategoryDTO? Category { get; set; }
         public UserDTO? User { get; set; }
         public bool IsModerated { get; set; }
         public List<TagDTO>? Tags { get; set; }
         public List<ImageDTO>? Images { get; set; }
+        public double Rating { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using Diplom_project_2024.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Diplom_project_2024.Migrations
 {
     [DbContext(typeof(HousesDBContext))]
-    partial class HousesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240409162001_Edit-Houses-Add-Different-Beds")]
+    partial class EditHousesAddDifferentBeds
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -176,9 +179,6 @@ namespace Diplom_project_2024.Migrations
                     b.Property<int>("BabyCribs")
                         .HasColumnType("int");
 
-                    b.Property<int>("Bathrooms")
-                        .HasColumnType("int");
-
                     b.Property<int>("Beds")
                         .HasColumnType("int");
 
@@ -195,15 +195,17 @@ namespace Diplom_project_2024.Migrations
                     b.Property<bool>("IsModerated")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Pets")
                         .HasColumnType("int");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
+
+                    b.Property<int>("Rooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SquareMeter")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()

@@ -1,10 +1,12 @@
-﻿using Azure.Storage.Blobs;
+﻿using AutoMapper;
+using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Diplom_project_2024.Data;
 using Diplom_project_2024.Functions;
 using Diplom_project_2024.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.IO;
 
 namespace Diplom_project_2024.Controllers //TODO PUT
@@ -15,12 +17,14 @@ namespace Diplom_project_2024.Controllers //TODO PUT
     {
         private readonly HousesDBContext _context;
         BlobServiceClient blob;
+        private readonly IMapper mapper;
         BlobContainerClient container;
 
-        public HousesController(HousesDBContext context, BlobServiceClient client)
+        public HousesController(HousesDBContext context, BlobServiceClient client, IMapper mapper)
         {
             _context = context;
             this.blob = client;
+            this.mapper = mapper;
             container = this.blob.GetBlobContainerClient("houseimages");
             container.CreateIfNotExists();
             container.SetAccessPolicy(PublicAccessType.BlobContainer);
@@ -28,60 +32,135 @@ namespace Diplom_project_2024.Controllers //TODO PUT
 
         //GET: api/Houses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHouses()
+        public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHouses(string? address,
+            string? from,
+            string? to,
+            int? adult,
+            int? childs,
+            int? infants,
+            int? pets
+            )
         {
-            List<HouseDTO> houses = await _context.Houses
+            var houses = _context.Houses
+                .Include(h=>h.Comments)
                 .Include(h => h.Address)
                 .Include(h => h.Category)
                 .Include(h => h.User)
                 .Include(h => h.Tags)
-                .Include(h => h.Images)
-                .Select(h => new HouseDTO
+                .Include(h => h.Images).Where(t=>t.IsModerated==true).ToList();
+            if (!address.IsNullOrEmpty())
+            {
+                var split = address.Split(" ");
+                if (split.Length >= 2)
                 {
-                    Id = h.Id,
-                    Description = h.Description,
-                    Price = h.Price,
-                    SquareMeter = h.SquareMeter,
-                    Rooms = h.Rooms,
-                    Address = new AddressDTO
+                    var country = split[0].ToLower();
+                    var city = split[1].ToLower();
+                    houses = houses.Where(t => t.Address.Country.ToLower().Contains(country) && t.Address.City.ToLower().Contains(city)).ToList();
+                }
+                if (split.Length == 1)
+                {
+                    var inf = split[0].ToLower();
+                    var buf = houses.Where(t => t.Address.Country.ToLower().Contains(inf));
+                    if (buf.Count() == 0)
+                        houses = houses.Where(t => t.Address.City.ToLower().Contains(inf)).ToList();
+                    else
+                        houses = buf.ToList();
+                }
+            }
+            if(!from.IsNullOrEmpty()&&!to.IsNullOrEmpty())
+            {
+                var fromDate = DateTime.Parse(from);
+                var toDate = DateTime.Parse(to);
+                houses = houses.Where(t =>
+                {
+                    var rents = t.Rents;
+                    var count = rents.Where(t =>
                     {
-                        Id = h.Address!.Id,
-                        Latitude = h.Address.Latitude,
-                        Longitude = h.Address.Longitude,
-                        Country = h.Address.Country,
-                        City = h.Address.City,
-                        FormattedAddress = h.Address.FormattedAddress,
-                        AddressLabel = h.Address.AddressLabel
-                    },
-                    Category = new CategoryDTO
-                    {
-                        Id = h.Category!.Id,
-                        Name = h.Category.Name
-                    },
-                    User = new UserDTO
-                    {
-                        Id = h.User!.Id,
-                        FirstName = h.User.FirstName,
-                        Surname = h.User.Surname,
-                        Email = h.User.Email
-                    },
-                    IsModerated = h.IsModerated,
-                    Tags = h.Tags!.Select(t => new TagDTO 
-                    { 
-                        Id = t.Id,
-                        Name = t.Name,
-                        ImagePath = t.ImagePath
-                    }).ToList(),
-                    Images = h.Images!.Select(img => new ImageDTO
-                    {
-                        Id = img.Id,
-                        Path = img.Path,
-                        IsMain = img.IsMain
-                    }).ToList()
-                })
-                .ToListAsync();
+                        var from = DateTime.Parse(t.From);
+                        var to = DateTime.Parse(t.To);
+                        bool check = true;
+                        if (!(from >= fromDate) && !(to <= fromDate))
+                            check = false;
+                        if (!(from >= toDate) && !(to <= toDate))
+                            check = false;
+                        else
+                            check = true;
+                        return check;
+                    }).Count();
+                    if (count == 0)
+                        return true;
+                    else
+                        return false;
+                }).ToList();
+            }
+            if(adult!=null&& adult!=0)
+                houses = houses.Where(t => t.Beds >= adult).ToList();
+            if(childs!=null && childs!=0)
+                houses = houses.Where(t => t.ChildBeds >= childs).ToList();
+            if(infants!=null && infants!=0)
+                houses.Where(t => t.BabyCribs >= infants).ToList();
+            if(pets!=null && pets!=0)
+                houses.Where(t => t.Pets >= pets).ToList();
 
-            return Ok(houses);
+            var dto = houses.Select(t =>
+            {
+                var houseDTO = mapper.Map<HouseDTO>(t);
+                if (t.Comments != null && t.Comments.Count>0)
+                    houseDTO.Rating = t.Comments.Average(t => t.Rating);
+                else
+                    houseDTO.Rating = 0;
+                return houseDTO;
+
+            }).ToList();
+
+            
+            //.Select(h => new HouseDTO
+            //{
+            //    Id = h.Id,
+            //    Description = h.Description,
+            //    Price = h.Price,
+            //    SquareMeter = h.SquareMeter,
+            //    Rooms = h.Rooms,
+            //    Address = new AddressDTO
+            //    {
+            //        Id = h.Address!.Id,
+            //        Latitude = h.Address.Latitude,
+            //        Longitude = h.Address.Longitude,
+            //        Country = h.Address.Country,
+            //        City = h.Address.City,
+            //        FormattedAddress = h.Address.FormattedAddress,
+            //        AddressLabel = h.Address.AddressLabel
+            //    },
+            //    Category = new CategoryDTO
+            //    {
+            //        Id = h.Category!.Id,
+            //        Name = h.Category.Name
+            //    },
+            //    User = new UserDTO
+            //    {
+            //        Id = h.User!.Id,
+            //        FirstName = h.User.FirstName,
+            //        Surname = h.User.Surname,
+            //        Email = h.User.Email
+            //    },
+            //    IsModerated = h.IsModerated,
+            //    Tags = h.Tags!.Select(t => new TagDTO 
+            //    { 
+            //        Id = t.Id,
+            //        Name = t.Name,
+            //        ImagePath = t.ImagePath
+            //    }).ToList(),
+            //    Images = h.Images!.Select(img => new ImageDTO
+            //    {
+            //        Id = img.Id,
+            //        Path = img.Path,
+            //        IsMain = img.IsMain
+            //    }).ToList()
+            //})
+            //.ToListAsync();
+
+            //return Ok(houses);
+            return Ok(dto);
         }
 
         //GET: api/Houses/5
@@ -98,8 +177,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Id = h.Id,
                     Description = h.Description,
                     Price = h.Price,
-                    SquareMeter = h.SquareMeter,
-                    Rooms = h.Rooms,
                     Address = new AddressDTO
                     {
                         Id = h.Address!.Id,
@@ -181,8 +258,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 {
                     Description = houseCreateDTO.Description!,
                     Price = houseCreateDTO.Price,
-                    SquareMeter = houseCreateDTO.SquareMeter,
-                    Rooms = houseCreateDTO.Rooms,
                     AddressId = newAddress.Id,
                     CategoryId = houseCreateDTO.CategoryId,
                     UserId = houseCreateDTO.UserId!,
@@ -264,8 +339,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             // Оновлення полів об'єкта нерухомості
             house.Description = houseUpdateDTO.Description ?? house.Description;
             house.Price = houseUpdateDTO.Price ?? house.Price;
-            house.SquareMeter = houseUpdateDTO.SquareMeter ?? house.SquareMeter;
-            house.Rooms = houseUpdateDTO.Rooms ?? house.Rooms;
 
             if (houseUpdateDTO.CategoryId.HasValue)
             {
@@ -304,8 +377,6 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 Id = house.Id,
                 Description = house.Description,
                 Price = house.Price,
-                SquareMeter = house.SquareMeter,
-                Rooms = house.Rooms,
                 IsModerated = house.IsModerated,
                 Address = new AddressDTO
                 {

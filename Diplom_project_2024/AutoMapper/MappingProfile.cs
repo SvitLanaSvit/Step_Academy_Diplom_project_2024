@@ -12,6 +12,11 @@ namespace Diplom_project_2024.AutoMapper
             CreateMap<User, UserProfileInfoDTO>();
             CreateMap<Message, MessageDTO>();
             CreateMap<PaymentData,PaymentDataDTO>();
+            CreateMap<House,HouseDTO>();
+            CreateMap<Category,CategoryDTO>();
+            CreateMap<Tag, TagDTO>();
+            CreateMap<Image, ImageDTO>();
+            CreateMap<Address, AddressDTO>(); 
         }
     }
 }   

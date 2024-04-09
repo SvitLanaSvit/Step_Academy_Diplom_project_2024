@@ -45,8 +45,6 @@ namespace Diplom_project_2024.Controllers
                     Id = r.House!.Id,
                     Description = r.House.Description,
                     Price = r.House.Price,
-                    SquareMeter = r.House.SquareMeter,
-                    Rooms = r.House.Rooms,
                     IsModerated = r.House.IsModerated,
                     Address = new AddressDTO
                     {
@@ -107,8 +105,6 @@ namespace Diplom_project_2024.Controllers
                     Id = r.House!.Id,
                     Description = r.House.Description,
                     Price = r.House.Price,
-                    SquareMeter = r.House.SquareMeter,
-                    Rooms = r.House.Rooms,
                     IsModerated = r.House.IsModerated,
                     Address = new AddressDTO
                     {
@@ -235,8 +231,6 @@ namespace Diplom_project_2024.Controllers
                             Id = rent.House!.Id,
                             Description = rent.House.Description,
                             Price = rent.House.Price,
-                            SquareMeter = rent.House.SquareMeter,
-                            Rooms = rent.House.Rooms,
                             IsModerated = rent.House.IsModerated,
                             Address = new AddressDTO
                             {
