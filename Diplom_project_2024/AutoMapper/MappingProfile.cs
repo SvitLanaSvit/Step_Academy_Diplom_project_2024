@@ -17,6 +17,7 @@ namespace Diplom_project_2024.AutoMapper
             CreateMap<Tag, TagDTO>();
             CreateMap<Image, ImageDTO>();
             CreateMap<Address, AddressDTO>(); 
+            CreateMap<Address, AddressCreateDTO>(); 
         }
     }
 }   

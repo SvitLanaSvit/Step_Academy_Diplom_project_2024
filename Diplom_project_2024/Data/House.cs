@@ -19,6 +19,7 @@ namespace Diplom_project_2024.Data
         public int BabyCribs { get; set; }
         public int Pets { get; set; }
         public int Bathrooms { get; set; }
+        public string AccomodationType { get; set; } = default!;
         public string UserId { get; set; } = default!;
         public bool IsModerated { get; set; } = false;
         public User? User { get; set; }

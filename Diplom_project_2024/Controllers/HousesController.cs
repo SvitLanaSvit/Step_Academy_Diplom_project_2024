@@ -4,10 +4,14 @@ using Azure.Storage.Blobs.Models;
 using Diplom_project_2024.Data;
 using Diplom_project_2024.Functions;
 using Diplom_project_2024.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Diplom_project_2024.CustomErrors;
 using System.IO;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Diplom_project_2024.Controllers //TODO PUT
 {
@@ -18,13 +22,15 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         private readonly HousesDBContext _context;
         BlobServiceClient blob;
         private readonly IMapper mapper;
+        private readonly UserManager<User> userManager;
         BlobContainerClient container;
 
-        public HousesController(HousesDBContext context, BlobServiceClient client, IMapper mapper)
+        public HousesController(HousesDBContext context, BlobServiceClient client, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             this.blob = client;
             this.mapper = mapper;
+            this.userManager = userManager;
             container = this.blob.GetBlobContainerClient("houseimages");
             container.CreateIfNotExists();
             container.SetAccessPolicy(PublicAccessType.BlobContainer);
@@ -224,22 +230,26 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         }
 
         //Post: api/Houses
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostHouse([FromForm] HouseCreateDTO houseCreateDTO)
         {
             if (ModelState.IsValid)
             {
-                var categoryExists = await _context.Categories.AnyAsync(c => c.Id == houseCreateDTO.CategoryId);
-                var userExists = await _context.Users.AnyAsync(u => u.Id == houseCreateDTO.UserId);
+                var user = await UserFunctions.GetUser(userManager, User);
+                var category= await _context.Categories.FirstOrDefaultAsync(c => c.Name == houseCreateDTO.Category);
+                //var userExists = await _context.Users.AnyAsync(u => u.Id == user.Id);
 
                 List<Image> images = new List<Image>(); ;
                 List<Tag> tags = new List<Tag>();
 
-                if (!categoryExists || !userExists)
+                if (category==null)
                 {
-                    return BadRequest("Invalid CategoryId or UserId.");
+                    return BadRequest(new Error("Invalid Category"));
                 }
 
+
+                if (houseCreateDTO.Address == null) return BadRequest(new Error("Address is must"));
                 var newAddress = new Address
                 {
                     // Assuming your Address object has these properties. Adjust accordingly.
@@ -259,10 +269,20 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     Description = houseCreateDTO.Description!,
                     Price = houseCreateDTO.Price,
                     AddressId = newAddress.Id,
-                    CategoryId = houseCreateDTO.CategoryId,
-                    UserId = houseCreateDTO.UserId!,
-                    Tags = tags
+                    CategoryId = category.Id,
+                    UserId = user.Id,
+                    Tags = tags,
+                    AccomodationType = houseCreateDTO.AccomodationType,
+                    BabyCribs = houseCreateDTO.BabyCribs,
+                    Bathrooms = houseCreateDTO.Bathrooms,
+                    Beds = houseCreateDTO.Beds,
+                    ChildBeds = houseCreateDTO.ChildBeds,
+                    IsModerated = false,
+                    Pets= houseCreateDTO.Pets,
+                    Name = houseCreateDTO.Name
                 };
+                //newHouse.UserId = user.Id;
+                //newHouse.UserId = "20b6cce4-2194-4b28-a5fe-05d522a0c8f0";
 
                 _context.Houses.Add(newHouse);
                 await _context.SaveChangesAsync();
@@ -298,18 +318,19 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     await _context.SaveChangesAsync();
                 }
 
-                if (houseCreateDTO.TagIds != null)
+                if (houseCreateDTO.Tags != null)
                 {
-                    foreach (var item in houseCreateDTO.TagIds)
+                    foreach (var item in houseCreateDTO.Tags)
                     {
-                        Tag tag = await _context.Tags.FirstAsync(t => t.Id == item);
+                        Tag tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == item);
+                        if (tag == null) return BadRequest(new Error("Tag wasnt found"));
                         tags.Add(tag);
                     }
 
                 }
                 await _context.SaveChangesAsync();
-
-                return Ok(new { newHouse.Id });
+                var houseDTO = mapper.Map<HouseDTO>(newHouse);
+                return Ok(houseDTO);
             }
             return BadRequest(ModelState);
         }
