@@ -53,8 +53,9 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 .Include(h => h.Category)
                 .Include(h => h.User)
                 .Include(h => h.Tags)
-                .Include(h => h.Images);
-                //.Where(t=>t.IsModerated==true).ToList();
+                .Include(h => h.Images)
+                //.Where(t=>t.IsModerated==true)
+                .ToList();
             if (!address.IsNullOrEmpty())
             {
                 var split = address.Split(" ");
