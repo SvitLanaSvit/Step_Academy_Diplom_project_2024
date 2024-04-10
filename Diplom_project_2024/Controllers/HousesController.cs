@@ -523,9 +523,5 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             else
                 return 0;
         }
-        private double GetNumber(House h)
-        {
-            return 0;
-        }
     }
 }
