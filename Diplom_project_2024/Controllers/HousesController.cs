@@ -35,7 +35,41 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             container.CreateIfNotExists();
             container.SetAccessPolicy(PublicAccessType.BlobContainer);
         }
+        [HttpGet("GetMainPageInfo")]
+        public async Task<IActionResult> GetMainPageInfo()
+        {
+            var theBests = _context.Houses
+                .Include(h => h.Comments)
+                .Include(h => h.Address)
+                .Include(h => h.Category)
+                .Include(h => h.User)
+                .Include(h => h.Tags)
+                .Include(h => h.Images)
+                .ToList()
+                .OrderByDescending(t => GetHouseRating(t))
+                //.OrderByDescending(t => GetNumber(t))
+                .ThenByDescending(t => t.Comments == null ? 0 : t.Comments.Count())
+                .Take(16)
+                .Select(t => mapper.Map<HouseDTO>(t))
+                .ToList();
 
+            var mostPopulars = _context.Houses
+                .Include(h => h.Comments)
+                .Include(h => h.Address)
+                .Include(h => h.Category)
+                .Include(h => h.User)
+                .Include(h => h.Tags)
+                .Include(h => h.Images)
+                .ToList()
+                .OrderByDescending(t=> t.Rents==null?0: t.Rents.Count())
+                .ThenByDescending(t => GetHouseRating(t))
+                .ThenByDescending(t => t.Comments==null?0: t.Comments.Count())
+                .Take(16)
+                .Select(t => mapper.Map<HouseDTO>(t))
+                .ToList();
+            return Ok(new {theMostPopular = mostPopulars, theBest = theBests });
+        }
+        
         //GET: api/Houses
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHouses(string? address,
@@ -75,13 +109,15 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         houses = buf.ToList();
                 }
             }
-            if(!from.IsNullOrEmpty()&&!to.IsNullOrEmpty())
+            if (!from.IsNullOrEmpty() && !to.IsNullOrEmpty())
             {
                 var fromDate = DateTime.Parse(from);
                 var toDate = DateTime.Parse(to);
                 houses = houses.Where(t =>
                 {
                     var rents = t.Rents;
+                    if (rents == null)
+                        return true;
                     var count = rents.Where(t =>
                     {
                         var from = DateTime.Parse(t.From);
@@ -101,14 +137,14 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                         return false;
                 }).ToList();
             }
-            if(adult!=null&& adult!=0)
+            if (adult!=null&& adult!=0)
                 houses = houses.Where(t => t.Beds >= adult).ToList();
             if(childs!=null && childs!=0)
                 houses = houses.Where(t => t.ChildBeds >= childs).ToList();
             if(infants!=null && infants!=0)
-                houses.Where(t => t.BabyCribs >= infants).ToList();
+                houses = houses.Where(t => t.BabyCribs >= infants).ToList();
             if(pets!=null && pets!=0)
-                houses.Where(t => t.Pets >= pets).ToList();
+                houses = houses.Where(t => t.Pets >= pets).ToList();
 
             var dto = houses.Select(t =>
             {
@@ -479,6 +515,17 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         private bool HouseExists(int id)
         {
             return _context.Houses.Any(e => e.Id == id);
+        }
+        private double GetHouseRating(House house)
+        {
+            if (house.Comments != null && house.Comments.Count > 0)
+                return house.Comments.Average(t => t.Rating);
+            else
+                return 0;
+        }
+        private double GetNumber(House h)
+        {
+            return 0;
         }
     }
 }
