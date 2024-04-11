@@ -92,7 +92,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 .ToList();
             if (!address.IsNullOrEmpty())
             {
-                var split = address.Split(" ");
+                var split = address.Split(' ',',') ;
                 if (split.Length >= 2)
                 {
                     var country = split[0].ToLower();
