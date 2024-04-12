@@ -24,4 +24,8 @@
     {
         public string contactEmail { get; set; } = default!;
     }
+    public class AddFavoriteHouse
+    {
+        public int houseId { get; set; }
+    }
 }

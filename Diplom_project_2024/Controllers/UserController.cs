@@ -52,6 +52,7 @@ namespace Diplom_project_2024.Controllers
             var us = await userManager.FindByIdAsync(user.Id);
             if (us == null) return NotFound(new ErrorException("user wasn't found").GetErrors());
             var userDTO = mapper.Map<UserDTO>(us);
+            userDTO.FavoriteHouses = context.FavoriteHouses.Include(t=>t.House).Where(t=>t.UserId == user.Id).Select(t=>mapper.Map<HouseDTO>(t.House)).ToList();
             return Ok(userDTO);
         }
         [Authorize]

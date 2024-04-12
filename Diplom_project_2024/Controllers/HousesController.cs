@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Diplom_project_2024.CustomErrors;
 using System.IO;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Diplom_project_2024.Models;
 
 namespace Diplom_project_2024.Controllers //TODO PUT
 {
@@ -511,7 +512,26 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             }
             return BadRequest(ModelState);
         }
+        [Authorize]
+        [HttpPost("AddFavoriteHouse")]
+        public async Task<IActionResult> AddFavoriteHouse(AddFavoriteHouse favId)
+        {
+            if(ModelState.IsValid)
+            {
+                int houseId = favId.houseId;
+                var user = await UserFunctions.GetUser(userManager, User);
+                FavoriteHouse favHouse = new FavoriteHouse()
+                {
+                    HouseId = houseId,
+                    UserId = user.Id
+                };
+                await _context.FavoriteHouses.AddAsync(favHouse);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return BadRequest(new Error("Required fields were not specified"));
 
+        }
         private bool HouseExists(int id)
         {
             return _context.Houses.Any(e => e.Id == id);
