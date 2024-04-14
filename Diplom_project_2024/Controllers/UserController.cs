@@ -241,6 +241,7 @@ namespace Diplom_project_2024.Controllers
             int countOfComments=0;
             houses.ForEach(t => countOfComments+= t.Comments.Count);
             userProfileDTO.countOfComments = countOfComments;
+            userProfileDTO.FavoriteHouses = context.FavoriteHouses.Include(t => t.House).Where(t => t.UserId == user.Id).Select(t => mapper.Map<HouseDTO>(t.House)).ToList();
             return Ok(userProfileDTO);
         }
         [Authorize]

@@ -94,6 +94,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             if (!address.IsNullOrEmpty())
             {
                 var split = address.Split(' ',',') ;
+                split = split.Where(t => !t.IsNullOrEmpty()).ToArray();
                 if (split.Length >= 2)
                 {
                     var country = split[0].ToLower();
