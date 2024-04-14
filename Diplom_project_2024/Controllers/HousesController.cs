@@ -515,7 +515,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         }
         [Authorize]
         [HttpPost("AddFavoriteHouse")]
-        public async Task<IActionResult> AddFavoriteHouse(AddFavoriteHouse favId)
+        public async Task<IActionResult> AddFavoriteHouse(FavoriteHouseIdDTO favId)
         {
             if(ModelState.IsValid)
             {
@@ -527,6 +527,23 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                     UserId = user.Id
                 };
                 await _context.FavoriteHouses.AddAsync(favHouse);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return BadRequest(new Error("Required fields were not specified"));
+
+        }
+        [Authorize]
+        [HttpPatch("DeleteFavoriteHouse")]
+        public async Task<IActionResult> DeleteFavoriteHouse(FavoriteHouseIdDTO favId)
+        {
+            if (ModelState.IsValid)
+            {
+                int houseId = favId.houseId;
+                var user = await UserFunctions.GetUser(userManager, User);
+                var favHouse = await _context.FavoriteHouses.FirstOrDefaultAsync(t=>t.HouseId == houseId&&t.UserId==user.Id);
+                if (favHouse == null) return BadRequest(new Error("User doesnt have this house in favorites yet"));
+                _context.FavoriteHouses.Remove(favHouse);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
