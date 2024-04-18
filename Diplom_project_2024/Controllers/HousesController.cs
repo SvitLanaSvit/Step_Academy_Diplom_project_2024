@@ -214,59 +214,22 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         public async Task<ActionResult<HouseDTO>> GetHouse(int id) 
         {
             var house = await _context.Houses
+                .Include(h => h.Comments)
                 .Include(h => h.Address)
                 .Include(h => h.Category)
                 .Include(h => h.User)
-                .Where(h => h.Id == id)
-                .Select(h => new HouseDTO
-                {
-                    Id = h.Id,
-                    Description = h.Description,
-                    Price = h.Price,
-                    Address = new AddressDTO
-                    {
-                        Id = h.Address!.Id,
-                        Latitude = h.Address.Latitude,
-                        Longitude = h.Address.Longitude,
-                        Country = h.Address.Country,
-                        City = h.Address.City,
-                        FormattedAddress = h.Address.FormattedAddress,
-                        AddressLabel = h.Address.AddressLabel
-                    },
-                    Category = new CategoryDTO
-                    {
-                        Id = h.Category!.Id,
-                        Name = h.Category.Name
-                    },
-                    User = new UserDTO
-                    {
-                        Id = h.User!.Id,
-                        FirstName = h.User.FirstName,
-                        Surname = h.User.Surname,
-                        Email = h.User.Email
-                    },
-                    IsModerated = h.IsModerated,
-                    Tags = h.Tags!.Select(t => new TagDTO
-                    {
-                        Id = t.Id,
-                        Name = t.Name,
-                        ImagePath = t.ImagePath
-                    }).ToList(),
-                    Images = h.Images!.Select(img => new ImageDTO
-                    {
-                        Id = img.Id,
-                        Path = img.Path,
-                        IsMain = img.IsMain
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
+                .Include(h => h.Tags)
+                .Include(h => h.Images)
+                //.Where(t=>t.IsModerated==true)
+                .FirstOrDefaultAsync(t => t.Id == id);
 
             if (house == null)
             {
-                return NotFound();
+                return NotFound(new Error("Wrong Id"));
             }
-
-            return Ok(house);
+            HouseDTO houseDTO = mapper.Map<HouseDTO>(house);
+            houseDTO.Rating = GetHouseRating(house);
+            return Ok(houseDTO);
         }
 
         //Post: api/Houses

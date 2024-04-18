@@ -15,7 +15,8 @@
         public int countOfHouses { get; set; }
         public int countOfComments {  get; set; }
         public string imagePath {  get; set; } = default!;
-        public List<HouseDTO>? FavoriteHouses { get; set; }
+        public List<HouseDTO>? favoriteHouses { get; set; }
+        public List<RentDTO>? rents { get; set; }
 
     }
 }

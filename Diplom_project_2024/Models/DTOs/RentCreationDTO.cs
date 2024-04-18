@@ -2,12 +2,11 @@
 {
     public class RentCreationDTO
     {
-        public string? UserName { get; set; }
-        public int HouseId { get; set; }
-        public int CountOfDay { get; set; }
-        public double Price { get; set; }
-        public string? From { get; set; }
-        public string? To { get; set; }
-        public string? UserId { get; set; }
-    }
+        public int houseId { get; set; }
+        public int? countOfDay { get; set; }
+        public double price { get; set; }
+        public string? from { get; set; }
+        public string? to { get; set; }
+        public PaymentDataDTO? PaymentData { get; set; }
+    }   
 }

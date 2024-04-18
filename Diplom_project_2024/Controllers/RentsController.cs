@@ -1,5 +1,9 @@
-﻿using Diplom_project_2024.Data;
+﻿using Diplom_project_2024.CustomErrors;
+using Diplom_project_2024.Data;
+using Diplom_project_2024.Functions;
 using Diplom_project_2024.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +14,12 @@ namespace Diplom_project_2024.Controllers
     public class RentsController : ControllerBase
     {
         private readonly HousesDBContext _context;
+        private readonly UserManager<User> userManager;    
 
-        public RentsController(HousesDBContext context)
+        public RentsController(HousesDBContext context, UserManager<User> userManager)
         {
             _context = context;
+            this.userManager = userManager;
         }
 
         //GET: api/Rents
@@ -141,34 +147,36 @@ namespace Diplom_project_2024.Controllers
         }
 
         //POST: api/Rents
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostRent([FromBody] RentCreationDTO rentCreationDTO)
         {
             if (ModelState.IsValid)
             {
-                var houseExists = await _context.Houses.AnyAsync(h => h.Id == rentCreationDTO.HouseId);
-                var userExists = await _context.Users.AnyAsync(u => u.Id == rentCreationDTO.UserId);
+                var houseExists = await _context.Houses.AnyAsync(h => h.Id == rentCreationDTO.houseId);
+                //var userExists = await _context.Users.AnyAsync(u => u.Id == rentCreationDTO.UserId);
 
-                if (!houseExists || !userExists)
+                if (!houseExists)
                 {
-                    return BadRequest("Invalid HouseId or UserId.");
+                    return BadRequest(new Error("Invalid HouseId."));
                 }
 
                 // Create a new Rent from the DTO
-                var user = await _context.Users.FindAsync(rentCreationDTO.UserId);
+                var user = await UserFunctions.GetUser(userManager, User);
                 //var house = await _context.Houses.FindAsync(rentCreationDTO.HouseId);
-                if (user == null)
-                {
-                    return NotFound($"No user found with ID {rentCreationDTO.UserId}.");
-                }
+                //if (user == null)
+                //{
+                //    return NotFound($"No user found with ID {rentCreationDTO.UserId}.");
+                //}
+                if(rentCreationDTO.countOfDay==null) rentCreationDTO.countOfDay = 0;
                 var rent = new Rent
                 {
-                    HouseId = rentCreationDTO.HouseId,
-                    CountOfDay = rentCreationDTO.CountOfDay,
-                    Price = rentCreationDTO.Price,
-                    From = rentCreationDTO.From,
-                    To = rentCreationDTO.To,
-                    User = user
+                    HouseId = rentCreationDTO.houseId,
+                    CountOfDay = (int)rentCreationDTO.countOfDay,
+                    Price = rentCreationDTO.price,
+                    From = rentCreationDTO.from,
+                    To = rentCreationDTO.to,
+                    UserId = user.Id
                 };
 
                 _context.Rents.Add(rent);
