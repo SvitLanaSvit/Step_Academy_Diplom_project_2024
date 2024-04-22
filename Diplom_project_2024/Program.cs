@@ -95,8 +95,8 @@ builder.Services.AddAzureClients(clientBuilder =>
 {
     clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
     clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
-    
-});
+   
+}); 
 
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{
