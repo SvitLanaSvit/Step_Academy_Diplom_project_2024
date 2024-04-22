@@ -229,6 +229,8 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             }
             HouseDTO houseDTO = mapper.Map<HouseDTO>(house);
             houseDTO.Rating = GetHouseRating(house);
+            houseDTO.User.countOfComments = _context.Comments.Where(t=>t.UserId==houseDTO.User.Id).Count();
+            houseDTO.User.countOfHouses = _context.Houses.Where(t=>t.UserId== houseDTO.User.Id).Count();
             return Ok(houseDTO);
         }
 
