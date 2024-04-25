@@ -83,6 +83,7 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
 builder.Services.AddAzureClients(clientBuilder =>
 {
     clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
+
     clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
 
 }); 
