@@ -167,5 +167,36 @@ namespace Diplom_project_2024.Services
                 throw new ErrorException(res.Errors.ToList()); 
             }
         }
+
+        public async void LoginOrCreateUser(ClaimsPrincipal user)
+        {
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var existingUser = await userManager.FindByIdAsync(userId);
+            if (existingUser == null)
+            {
+                existingUser = new User
+                {
+                    Id = userId,
+                    // Дополнительные данные о пользователе
+                    FirstName = user.FindFirst(ClaimTypes.GivenName)?.Value,
+                    Surname = user.FindFirst(ClaimTypes.Surname)?.Value,
+                    Email = user.FindFirst(ClaimTypes.Email)?.Value,
+                    ImagePath = user.FindFirst("picture")?.Value,
+                    // Другие поля, которые вы хотите сохранить
+                };
+                var res = await userManager.CreateAsync(existingUser);
+                if (res.Succeeded)
+                {
+                    existingUser = await userManager.FindByNameAsync(existingUser.Email);
+                    _user = existingUser;
+                }
+                else
+                {
+                    throw new ErrorException(res.Errors.ToList());
+                }
+            }
+            else
+                _user = existingUser;
+        }
     }
 }

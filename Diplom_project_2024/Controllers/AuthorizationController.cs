@@ -3,6 +3,7 @@ using Diplom_project_2024.CustomErrors;
 using Diplom_project_2024.Data;
 using Diplom_project_2024.Models.DTOs;
 using Diplom_project_2024.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,9 +24,9 @@ namespace Diplom_project_2024.Controllers
         private readonly HousesDBContext context;
         private readonly IConfiguration configuration;
         private readonly SignInManager<User> signInManager;
-        private readonly IAuthenticationService authentication;
+        private readonly Services.IAuthenticationService authentication;
 
-        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager, IAuthenticationService authentication)
+        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager, Services.IAuthenticationService authentication)
         {
             this.manager = manager;
             this.context = context;
@@ -53,6 +54,25 @@ namespace Diplom_project_2024.Controllers
                 }
             }
             return BadRequest(new Error("Required fields were not specified"));
+        }
+        [HttpGet("LoginGoogle")]
+        public IActionResult Login(string returnUrl = "/")
+        {
+            var properties = new AuthenticationProperties { RedirectUri = returnUrl };
+            return Challenge(properties, "Google");
+        }
+        [HttpGet("GoogleResponse")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync("Google");
+            if (!authenticateResult.Succeeded)
+            {
+                return BadRequest(new Error( "Failed to authenticate with Google" ));
+            }
+            var user = authenticateResult.Principal;
+            authentication.LoginOrCreateUser(user);
+            var token = authentication.CreateToken();
+            return Ok(token);
         }
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDTO user)
