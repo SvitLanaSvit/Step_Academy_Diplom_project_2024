@@ -30,16 +30,6 @@ using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsole
 var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/");
 var credential = new DefaultAzureCredential(new DefaultAzureCredentialOptions
 {
-    ExcludeEnvironmentCredential = false,
-    ExcludeManagedIdentityCredential = true,
-    ExcludeVisualStudioCredential = true,
-    ExcludeAzureCliCredential = true,
-    ExcludeAzurePowerShellCredential = true,
-    ExcludeSharedTokenCacheCredential = true,
-    ExcludeAzureDeveloperCliCredential = true,
-    ExcludeInteractiveBrowserCredential = true,
-    ExcludeVisualStudioCodeCredential = true,
-    ExcludeWorkloadIdentityCredential = true,
     TenantId = "579f5210-8fff-4a7f-ab21-959805078588"
 });
 builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
