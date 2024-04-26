@@ -20,7 +20,15 @@ env:
   DOTNET_CORE_VERSION: 8.0.x
   WORKING_DIRECTORY: Diplom_project_2024
 jobs:
+  azureLogin:
+    runs-on: windows-latest
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.Diplomproject2024myapi_SPN }}
   build:
+    needs: azureLogin
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4

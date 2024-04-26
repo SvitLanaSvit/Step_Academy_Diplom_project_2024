@@ -39,11 +39,10 @@ var keyVaultEndpoint = new Uri("https://diplomproject2024vault.vault.azure.net/"
 //    ExcludeAzureDeveloperCliCredential = true,
 //    ExcludeInteractiveBrowserCredential = true,
 //    ExcludeVisualStudioCodeCredential = true,
-//    ExcludeWorkloadIdentityCredential = true,
-//    ManagedIdentityClientId = "2bc39356-5d5d-4293-90b4-06ea794e8d30"
+//    ExcludeWorkloadIdentityCredential = true
 //});
-var credential = new ClientSecretCredential(builder.Configuration["AZURE_TENANT_ID"], builder.Configuration["AZURE_CLIENT_ID"], builder.Configuration["AZURE_CLIENT_SECRET"]);
-//var credential = new DefaultAzureCredential();
+//var credential = new ClientSecretCredential(builder.Configuration["AZURE_TENANT_ID"], builder.Configuration["AZURE_CLIENT_ID"], builder.Configuration["AZURE_CLIENT_SECRET"]);
+var credential = new DefaultAzureCredential();
 builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, credential);
 
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
