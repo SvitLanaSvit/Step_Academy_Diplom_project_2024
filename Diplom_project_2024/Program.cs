@@ -62,7 +62,8 @@ builder.Services.AddCors(options =>
             build
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader();
+                .AllowAnyHeader()
+                .WithOrigins("http://localhost:5173");
         });
 });
 // Add services to the container.
@@ -93,8 +94,8 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
 //});
 builder.Services.AddAzureClients(clientBuilder =>
 {
-    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
-    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string-proj"]!, preferMsi: true);
+    clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string--blob"]!, preferMsi: true);
+    clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string--queue"]!, preferMsi: true);
 
 }); 
 
@@ -133,8 +134,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     })
     .AddGoogle(options =>
     {
-        options.ClientId = builder.Configuration["Google-ClientId"];
-        options.ClientSecret = builder.Configuration["Google-ClientSecret"];
+        options.ClientId = builder.Configuration["Google--ClientId"];
+        options.ClientSecret = builder.Configuration["Google--ClientSecret"];
     });
 
 
