@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using Azure.Core.Diagnostics;
 using Diplom_project_2024.Services;
+using System.Security.Claims;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -135,6 +137,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.ClientId = builder.Configuration["Google:ClientId"];
         options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+    })
+    .AddFacebook(options =>
+    {
+        options.AppId = builder.Configuration["Facebook:AppId"];
+        options.AppSecret = builder.Configuration["Facebook:AppSecret"];
     });
 
 

@@ -58,9 +58,14 @@ namespace Diplom_project_2024.Controllers
         [HttpGet("LoginGoogle")]
         public IActionResult Login(string returnUrl = "/")
         {
-            var properties = new AuthenticationProperties { RedirectUri = returnUrl };
-            return Challenge(properties, "Google");
-        }
+            //var properties = new AuthenticationProperties { RedirectUri = returnUrl };
+            //return Challenge(properties, "Google");
+
+            string redirecturl = Url.ActionLink("GoogleResponse", "Authorization");
+            var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirecturl);
+            var chall = new ChallengeResult("Google", properties);
+            return chall    ;
+        }   
         [HttpGet("GoogleResponse")]
         public async Task<IActionResult> GoogleResponse()
         {
@@ -74,6 +79,56 @@ namespace Diplom_project_2024.Controllers
             var token = authentication.CreateToken();
             return Ok(token);
         }
+        //[HttpGet("LoginFacebook")]
+        //public IActionResult LoginFacebook(string returnUrl = "/")
+        //{
+        //    string redirecturl = Url.ActionLink("LoginFacebook", "Authorization");
+        //    var properties = new AuthenticationProperties { RedirectUri = redirecturl };
+        //    return Challenge(properties, "Facebook");
+        //}
+        [HttpGet("LoginFacebook")]
+        public IActionResult LoginFacebook(string returnUrl = "/")
+        {
+            var properties = signInManager.ConfigureExternalAuthenticationProperties("Facebook", Url.Action("LoginFacebook", "Authorization", new { returnUrl }));
+            return Challenge(properties, "Facebook");
+        }
+
+        [HttpGet("FacebookCallback")]
+        public async Task<IActionResult> FacebookCallback(string returnUrl = "/")
+        {
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return BadRequest("Error loading external login information.");
+            }
+
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (result.Succeeded)
+            {
+                return Redirect(returnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                return BadRequest("User account locked out.");
+            }
+            else
+            {
+                //var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+                //var user = new User { UserName = email, Email = email };
+                //var identityResult = await userManager.CreateAsync(user);
+                //if (identityResult.Succeeded)
+                //{
+                //    identityResult = await userManager.AddLoginAsync(user, info);
+                //    if (identityResult.Succeeded)
+                //    {
+                //        await _signInManager.SignInAsync(user, isPersistent: false);
+                //        return Redirect(returnUrl);
+                //    }
+                //}
+                return BadRequest("Failed to create user.");
+            }
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(UserLoginDTO user)
         {

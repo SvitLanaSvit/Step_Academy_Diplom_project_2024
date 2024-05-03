@@ -2,6 +2,8 @@
 {
     public class UserProfileInfoDTO
     {
+        public string role { get; set; } = default!;
+        public string email { get; set; } = default!;
         public string firstName { get; set; } = default!;
         public string surname { get; set; } = default!;
         public string gender { get; set; } = default!;
@@ -17,6 +19,7 @@
         public string imagePath {  get; set; } = default!;
         public List<HouseDTO>? favoriteHouses { get; set; }
         public List<RentDTO>? rents { get; set; }
+        public List<HouseDTO>? houses { get; set; }
 
     }
 }

@@ -444,6 +444,7 @@ namespace Diplom_project_2024.Controllers //TODO PUT
         }
 
         //DELETE: api/Houses/5
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteHouse(int id)
         {
@@ -451,17 +452,24 @@ namespace Diplom_project_2024.Controllers //TODO PUT
             {
                 var house = await _context.Houses
                               .Include(h => h.Images)
+                              .Include(h=>h.User)
                               .SingleOrDefaultAsync(h => h.Id == id);
-
+               
+               
                 if (house == null)
                 {
-                    return NotFound($"House with ID {id} not found.");
+                    return NotFound(new Error($"House with ID {id} not found."));
                 }
-
+                var user = await UserFunctions.GetUser(userManager, User);
+                if (house.User.Id != user.Id && !(await userManager.IsInRoleAsync(user, "Admin")))
+                {
+                    return BadRequest(new Error("You don't have permission to delete this house"));
+                }
                 // Видалення зображень з Azure Blob Storage
                 foreach (var image in house.Images!)
                 {
                     BlobContainerFunctions.DeleteImage(container, image.Path);
+                    _context.Images.Remove(image);
                 }
 
                 // Видалення пов'язаної адреси
@@ -469,6 +477,11 @@ namespace Diplom_project_2024.Controllers //TODO PUT
                 if (address != null)
                 {
                     _context.Addresses.Remove(address);
+                }
+                var favHouses = await _context.FavoriteHouses.Where(t=>t.HouseId==house.Id).ToListAsync();
+                foreach(var favHouse in favHouses)
+                {
+                    _context.FavoriteHouses.Remove(favHouse);
                 }
 
                 _context.Houses.Remove(house);

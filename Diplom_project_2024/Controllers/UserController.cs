@@ -235,25 +235,41 @@ namespace Diplom_project_2024.Controllers
                 userProfileDTO.expireDate = payment.ExpireDate;
                 userProfileDTO.cvv = payment.CVV;
             }
-            var houses = context.Houses.Include(t=>t.Comments).Where(t=>t.UserId==user.Id).ToList();
+            var houses = await context.Houses.Include(t=>t.Comments).Where(t=>t.UserId==user.Id).ToListAsync();
             userProfileDTO.countOfHouses = houses.Count;
             int countOfComments=0;
             houses.ForEach(t => countOfComments+= t.Comments.Count);
             userProfileDTO.countOfComments = countOfComments;
-            userProfileDTO.favoriteHouses = context.FavoriteHouses
+            userProfileDTO.favoriteHouses  = await context.FavoriteHouses
                 .Include(t => t.House)
                 .Include(t=>t.House.Images)
                 .Include(t=>t.House.Category)
                 .Include(t=>t.House.Address)
                 .Include(t=>t.House.User)
-                .Where(t => t.UserId == user.Id).Select(t => mapper.Map<HouseDTO>(t.House)).ToList();
-            userProfileDTO.rents = context.Rents.Where(t => t.UserId == user.Id)
+                .Include(t=>t.House.Tags)
+                .Where(t => t.UserId == user.Id).Select(t => mapper.Map<HouseDTO>(t.House)).ToListAsync();
+            userProfileDTO.rents = await context.Rents.Where(t => t.UserId == user.Id)
                 .Include(t=>t.House)
                 .Include(t => t.House.Images)
                 .Include(t => t.House.Category)
                 .Include(t => t.House.Address)
                 .Include(t => t.House.User)
-                .Select(t => mapper.Map<RentDTO>(t)).ToList();
+                .Include(t => t.House.Tags)
+                .Select(t => mapper.Map<RentDTO>(t)).ToListAsync();
+            userProfileDTO.houses = await context.Houses
+                .Include(h => h.Comments)
+                .Include(h => h.Address)
+                .Include(h => h.Category)
+                .Include(h => h.User)
+                .Include(h => h.Tags)
+                .Include(h => h.Images)
+                .Where(t=>t.UserId==user.Id)
+                .Select(t => mapper.Map<HouseDTO>(t))
+                .ToListAsync();
+            if (await userManager.IsInRoleAsync(user, "Admin"))
+                userProfileDTO.role = "Admin";
+            else
+                userProfileDTO.role = "User";
             return Ok(userProfileDTO);
         }
         [Authorize]

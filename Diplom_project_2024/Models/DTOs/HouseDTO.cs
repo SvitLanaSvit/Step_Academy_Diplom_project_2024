@@ -4,8 +4,10 @@ namespace Diplom_project_2024.Models.DTOs
 {
     public class HouseDTO
     {
+        public string AccomodationType { get; set; } = default!;
         public int Id { get; set; }
         public string? Description { get; set; }
+        
         public double? Price { get; set; }
         public string Name { get; set; } = default!;
         public int Beds { get; set; }
