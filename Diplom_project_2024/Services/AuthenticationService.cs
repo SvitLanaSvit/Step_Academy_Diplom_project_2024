@@ -8,6 +8,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Diplom_project_2024.CustomErrors;
+using Diplom_project_2024.Configs;
+using Diplom_project_2024.Models;
+using Google.Apis.Auth;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace Diplom_project_2024.Services
 {
@@ -17,13 +22,16 @@ namespace Diplom_project_2024.Services
         private readonly IConfiguration configuration;
         private readonly HousesDBContext context;
         private User? _user;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, HousesDBContext context)
+        public AuthenticationService(UserManager<User> userManager, IConfiguration configuration, HousesDBContext context, IHttpClientFactory httpClientFactory)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.context = context;
+            _httpClientFactory = httpClientFactory;
         }
+
         public async Task<TokenDTO> CreateToken(string? oldToken = null)
         {
             var claims = await GetClaims();
@@ -197,6 +205,43 @@ namespace Diplom_project_2024.Services
             }
             else
                 _user = existingUser;
+        }
+        public async Task<bool> AuthorizeGoogle(string token)
+        {
+            var googleClient = _httpClientFactory.CreateClient("GoogleClient");
+            googleClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await googleClient.GetAsync("");
+            if (response != null && response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var userProfile = JsonConvert.DeserializeObject<GoogleUserDTO>(content);
+   
+                var isExistUser = await userManager.FindByEmailAsync(userProfile.email);
+                if (isExistUser != null && isExistUser.PasswordHash == "")
+                {
+                    _user = isExistUser;
+                    return true;
+                }
+                else if (isExistUser == null)
+                {
+                    var user = new User()
+                    {
+                        FirstName = userProfile.given_name,
+                        Surname = userProfile.family_name,
+                        Email = userProfile.email,
+                        UserName = userProfile.email,
+                        ImagePath = userProfile.picture,
+                        PasswordHash = ""
+                    };
+                    await userManager.CreateAsync(user);
+                    _user = await userManager.FindByEmailAsync(user.Email);
+                    return true;
+                }
+                else
+                    throw new ErrorException("You already register your email with simple authorization");
+
+            }
+            return false;
         }
     }
 }

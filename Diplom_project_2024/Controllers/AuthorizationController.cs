@@ -1,8 +1,11 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Diplom_project_2024.CustomErrors;
 using Diplom_project_2024.Data;
+using Diplom_project_2024.Models;
 using Diplom_project_2024.Models.DTOs;
 using Diplom_project_2024.Services;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,9 +13,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Diplom_project_2024.Controllers
 {
@@ -25,14 +32,16 @@ namespace Diplom_project_2024.Controllers
         private readonly IConfiguration configuration;
         private readonly SignInManager<User> signInManager;
         private readonly Services.IAuthenticationService authentication;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager, Services.IAuthenticationService authentication)
+        public AuthorizationController(HousesDBContext context, UserManager<User> manager, IConfiguration configuration, SignInManager<User> signInManager, Services.IAuthenticationService authentication, IHttpClientFactory httpClientFactory)
         {
             this.manager = manager;
             this.context = context;
             this.configuration = configuration;
             this.signInManager = signInManager;
             this.authentication = authentication;
+            _httpClientFactory = httpClientFactory;
         }
         [HttpPost("Registration")]
         public async Task<IActionResult> Registration(UserRegisterDTO user)
@@ -55,29 +64,35 @@ namespace Diplom_project_2024.Controllers
             }
             return BadRequest(new Error("Required fields were not specified"));
         }
-        [HttpGet("LoginGoogle")]
-        public IActionResult Login(string returnUrl = "/")
+        [HttpPost("LoginGoogle")]
+        public async Task<IActionResult> Login(GoogleSignInDTO googleSignInDTO)
         {
-            //var properties = new AuthenticationProperties { RedirectUri = returnUrl };
-            //return Challenge(properties, "Google");
-
-            string redirecturl = Url.ActionLink("GoogleResponse", "Authorization");
-            var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirecturl);
-            var chall = new ChallengeResult("Google", properties);
-            return chall    ;
-        }   
-        [HttpGet("GoogleResponse")]
-        public async Task<IActionResult> GoogleResponse()
-        {
-            var authenticateResult = await HttpContext.AuthenticateAsync("Google");
-            if (!authenticateResult.Succeeded)
+            try
             {
-                return BadRequest(new Error( "Failed to authenticate with Google" ));
+                var res = await authentication.AuthorizeGoogle(googleSignInDTO.IdToken);
+                if(res)
+                {
+                    var token = await authentication.CreateToken();
+                    return Ok(token);
+                }
+                return BadRequest(new Error("Something was wrong"));
             }
-            var user = authenticateResult.Principal;
-            authentication.LoginOrCreateUser(user);
-            var token = authentication.CreateToken();
-            return Ok(token);
+            catch(ErrorException ex)
+            {
+                return BadRequest(ex.GetErrors());
+            }
+
+            //GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings();
+            //var google = configuration.GetSection("Google");
+            //settings.Audience = new List<string>() { google["ClientId"] };
+
+            //var payload = GoogleJsonWebSignature.ValidateAsync(googleSignInDTO.IdToken, settings).Result;
+            //return Ok(payload);
+            //var user =await authentication.GetPrincipalFromGoogleAuthToken(googleSignInDTO.IdToken);
+            //authentication.LoginOrCreateUser(user);
+            //var token =  await authentication.CreateToken();
+            //return Ok(token); 
+
         }
         //[HttpGet("LoginFacebook")]
         //public IActionResult LoginFacebook(string returnUrl = "/")

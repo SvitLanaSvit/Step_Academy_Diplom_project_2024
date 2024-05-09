@@ -1,4 +1,6 @@
-﻿namespace Diplom_project_2024.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Diplom_project_2024.Models
 {
     public class SetFirstNameModel
     {
@@ -27,5 +29,10 @@
     public class FavoriteHouseIdDTO
     {
         public int houseId { get; set; }
+    }
+    public class GoogleSignInDTO
+    {
+        [Required]
+        public string IdToken { get; set; } = default!;
     }
 }

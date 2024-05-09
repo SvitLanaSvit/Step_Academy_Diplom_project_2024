@@ -13,6 +13,7 @@ using Azure.Core.Diagnostics;
 using Diplom_project_2024.Services;
 using System.Security.Claims;
 using System;
+using Diplom_project_2024.Configs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +53,6 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
     ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
 });
 
-
 //Добавление AuthenticationService
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
@@ -66,6 +66,12 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         });
+});
+
+
+builder.Services.AddHttpClient("GoogleClient", client =>
+{
+    client.BaseAddress = new Uri("https://www.googleapis.com/oauth2/v3/userinfo");
 });
 // Add services to the container.
 
@@ -132,11 +138,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             ClockSkew = TimeSpan.Zero
         };
-    })
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Google:ClientId"];
-        options.ClientSecret = builder.Configuration["Google:ClientSecret"];
     })
     .AddFacebook(options =>
     {
