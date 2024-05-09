@@ -14,5 +14,6 @@ namespace Diplom_project_2024.Services
         public Task<bool> RegisterUser(UserRegisterDTO user);
         public void LoginOrCreateUser(ClaimsPrincipal user);
         public Task<bool> AuthorizeGoogle(string token);
+        public Task<bool> AuthorizeFacebook(FacebookUserDTO userDTO);
     }
 }

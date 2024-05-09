@@ -101,11 +101,26 @@ namespace Diplom_project_2024.Controllers
         //    var properties = new AuthenticationProperties { RedirectUri = redirecturl };
         //    return Challenge(properties, "Facebook");
         //}
-        [HttpGet("LoginFacebook")]
-        public IActionResult LoginFacebook(string returnUrl = "/")
+        [HttpPost("LoginFacebook")]
+        public async Task<IActionResult> LoginFacebook(FacebookUserDTO userDTO)
         {
-            var properties = signInManager.ConfigureExternalAuthenticationProperties("Facebook", Url.Action("LoginFacebook", "Authorization", new { returnUrl }));
-            return Challenge(properties, "Facebook");
+            if(ModelState.IsValid)
+            {
+                try
+                {
+                    var res = await authentication.AuthorizeFacebook(userDTO);
+                    if (res)
+                    {
+                        var token = await authentication.CreateToken();
+                        return Ok(token);
+                    }    
+                }
+                catch(ErrorException ex)
+                {
+                    return BadRequest(ex.GetErrors());
+                }
+            }
+            return BadRequest(new Error("Required fields were not specified"));
         }
 
         [HttpGet("FacebookCallback")]

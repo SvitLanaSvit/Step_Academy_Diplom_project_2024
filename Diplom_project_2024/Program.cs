@@ -138,11 +138,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
             ClockSkew = TimeSpan.Zero
         };
-    })
-    .AddFacebook(options =>
-    {
-        options.AppId = builder.Configuration["Facebook:AppId"];
-        options.AppSecret = builder.Configuration["Facebook:AppSecret"];
     });
 
 

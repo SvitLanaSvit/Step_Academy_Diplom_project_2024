@@ -243,5 +243,32 @@ namespace Diplom_project_2024.Services
             }
             return false;
         }
+
+        public async Task<bool> AuthorizeFacebook(FacebookUserDTO userDTO)
+        {
+            var ExistingUser = await userManager.FindByEmailAsync(userDTO.email);
+            if (ExistingUser != null&& ExistingUser.PasswordHash=="") 
+            {
+                _user = ExistingUser;
+                return true;
+            }
+            else if (ExistingUser == null)
+            {
+                var user = new User()
+                {
+                    FirstName = userDTO.firstName,
+                    Surname = userDTO.surName,
+                    Email = userDTO.email,
+                    UserName = userDTO.email,
+                    ImagePath = userDTO.picture,
+                    PasswordHash = ""
+                };
+                await userManager.CreateAsync(user);
+                _user = await userManager.FindByEmailAsync(user.Email);
+                return true;
+            }
+            else
+                throw new ErrorException("You already register your email with simple authorization");
+        }
     }
 }
