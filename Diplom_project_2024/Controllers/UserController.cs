@@ -342,6 +342,25 @@ namespace Diplom_project_2024.Controllers
         public async Task<IActionResult> DeleteAccount()
         {
             var user = await UserFunctions.GetUser(userManager, User);
+            var rents = context.Rents.Include(t=>t.User).Where(t=>t.User.Id==user.Id).ToList();
+            if(rents !=null && rents.Count() > 0)
+            {
+                context.Rents.RemoveRange(rents);
+                await context.SaveChangesAsync();
+            }
+            var comments = context.Comments.Where(t=>t.UserId==user.Id).ToList();
+            if(comments!=null && comments.Count() > 0)
+            {
+                context.Comments.RemoveRange(comments);
+                await context.SaveChangesAsync();
+            }
+            var favoriteHouses = context.FavoriteHouses.Where(t=>t.UserId == user.Id).ToList();
+            if(favoriteHouses!=null && favoriteHouses.Count()>0)
+            {
+                context.FavoriteHouses.RemoveRange(favoriteHouses); 
+                await context.SaveChangesAsync();
+            }
+            
             var res = await userManager.DeleteAsync(user);
             if (res.Succeeded)
                 return Ok();
