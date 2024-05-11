@@ -17,7 +17,6 @@ using Diplom_project_2024.Configs;
 
 var builder = WebApplication.CreateBuilder(args);
 
-using AzureEventSourceListener listener = AzureEventSourceListener.CreateConsoleLogger();
 
 //DefaultAzureCredentialOptions options = new DefaultAzureCredentialOptions()
 //{
@@ -53,7 +52,7 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
     ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
 });
 
-//Добавление AuthenticationService
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ AuthenticationService
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 builder.Services.AddCors(options =>
@@ -88,7 +87,6 @@ builder.Services.AddDbContext<HousesDBContext>(options =>
     //options.UseSqlServer(builder.Configuration["HousesDB"]);
 });
 
-
 //builder.Services.AddAzureClients(clientBuilder =>
 //{
 //    //clientBuilder.AddBlobServiceClient(builder.Configuration["HouseContainerBlob"], preferMsi: true);
@@ -104,8 +102,7 @@ builder.Services.AddAzureClients(clientBuilder =>
     clientBuilder.AddBlobServiceClient(builder.Configuration["blob-string:blob"]!, preferMsi: true);
     clientBuilder.AddQueueServiceClient(builder.Configuration["blob-string:queue"]!, preferMsi: true);
 
-}); 
-
+});
 //builder.Services.AddAuthentication().AddGoogle(options =>
 //{
 //    //IConfigurationSection googlesection = configuration.GetSection("Authentication:Google");
