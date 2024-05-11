@@ -1,15 +1,30 @@
 {
   "dependencies": {
-    "apis1": {
-      "type": "apis"
-    },
     "secrets1": {
       "type": "secrets",
       "connectionId": "VaultUri"
     },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:HousesDB"
+    },
     "storage1": {
       "type": "storage",
-      "connectionId": "blob-string"
+      "connectionId": "blob-string",
+      "dynamicId": null
+    },
+    "apis1": {
+      "type": "apis"
+    },
+    "secrets2": {
+      "type": "secrets"
+    },
+    "appInsights1": {
+      "type": "appInsights",
+      "connectionId": "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    },
+    "identityapp1": {
+      "type": "identityapp"
     }
   }
 }

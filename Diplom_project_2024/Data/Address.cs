@@ -4,12 +4,12 @@
     {
         public int Id { get; set; }
 
-        public string Latitude { get; set; }
-        public string Longitude { get; set; }
-        public string Country { get; set; }
-        public string City { get; set; }
-        public string FormattedAddress { get; set; }
-        public string AddressLabel { get; set; }
+        public string Latitude { get; set; } = default!;
+        public string Longitude { get; set; } = default!;
+        public string Country { get; set; } = default!;
+        public string City { get; set; } = default!;
+        public string FormattedAddress { get; set; } = default!;
+        public string AddressLabel { get; set; } = default!;
         public House? House { get; set; }
     }
 }

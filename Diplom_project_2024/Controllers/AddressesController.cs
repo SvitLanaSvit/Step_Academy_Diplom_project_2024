@@ -98,7 +98,7 @@ namespace Diplom_project_2024.Controllers
             _context.Addresses.Remove(address);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok($"Address with ID {id} has been successfully deleted.");
         }
     }
 }
